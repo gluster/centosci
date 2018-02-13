@@ -24,6 +24,7 @@ do
     esac
 done
 
+cd glusto-tests/tests
 if [ "$MODULE" == "bvt" ]
     then
         glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_basic.py --junitxml=/tmp/bvt-junit.xml'
