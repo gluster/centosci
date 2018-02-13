@@ -1,9 +1,34 @@
 #!/bin/bash
 
-cd glusto-tests/tests
-glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_basic.py --junitxml=/tmp/bvt-junit.xml'
-glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_vvt.py --junitxml=/tmp/vvt-junit.xml'
-glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_cvt.py  --junitxml=/tmp/cvt-junit.xml'
-glusto -c ../../gluster_tests_config.yml --pytest='-v functional/afr  --junitxml=/tmp/afr-junit.xml'
-glusto -c ../../gluster_tests_config.yml --pytest='-v functional/glusterd  --junitxml=/tmp/glusterd-junit.xml'
-glusto -c ../../gluster_tests_config.yml --pytest='-v functional/nfs_ganesha  --junitxml=/tmp/nfs-ganesha-junit.xml'
+function print_help {
+    echo "./run-glusto.sh -m <module-name>"
+    echo "<module-name matches the folder names in tests/functional folder"
+    echo "bvt is a special module name"
+}
+
+while getopts m:h option
+do
+    case "${option}" in
+    m)
+        MODULE=${OPTARG}
+        ;;
+    h)
+        print_help
+        exit 0
+        ;;
+    ?)
+        echo "Invalid parameter"
+        print_help
+        exit 1
+        ;;
+    esac
+done
+
+if [ "$MODULE" == "bvt" ]
+    then
+        glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_basic.py --junitxml=/tmp/bvt-junit.xml'
+        glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_vvt.py --junitxml=/tmp/vvt-junit.xml'
+        glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_cvt.py  --junitxml=/tmp/cvt-junit.xml'
+    else
+        echo "glusto -c ../../gluster_tests_config.yml --pytest='-v functional/$MODULE --junitxml=/tmp/$MODULE-junit.xml'"
+fi
