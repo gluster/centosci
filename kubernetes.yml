@@ -1,0 +1,46 @@
+- job:
+    name: gluster_kubernetes
+    node: gluster
+    description: Run the complex test from gluster-kubernetes. Tests are
+      triggered for a pull-request after one of the repository admins approves
+      it (with standard Jenkins GitHub commands).
+    project-type: freestyle
+    concurrent: true
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+    properties:
+    - github:
+        url: https://github.com/gluster/gluster-kubernetes/
+
+    triggers:
+    - github-pull-request:
+        admin-list:
+        - jarrpa
+        - obnoxxx
+        white-list:
+        - jarrpa
+        - obnoxxx
+        cron: H/5 * * * *
+        status-context: centos-ci
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/kubernetes/gluster-kubernetes.sh "ghprbPullId=${ghprbPullId}"
+
+    publishers:
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
+
+    wrappers:
+    - ansicolor:
+        colormap: xterm
+    - timestamps
