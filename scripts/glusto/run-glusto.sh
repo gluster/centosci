@@ -31,5 +31,5 @@ if [ "$MODULE" == "bvt" ]
         glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_vvt.py --junitxml=/tmp/vvt-junit.xml'
         glusto -c ../../gluster_tests_config.yml --pytest='-v functional/bvt/test_cvt.py  --junitxml=/tmp/cvt-junit.xml'
     else
-        echo "glusto -c ../../gluster_tests_config.yml --pytest='-v functional/$MODULE --junitxml=/tmp/$MODULE-junit.xml'"
+        glusto -c ../../gluster_tests_config.yml --pytest='-v functional/$MODULE --junitxml=/tmp/$MODULE-junit.xml'
 fi
