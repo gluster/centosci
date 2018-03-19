@@ -117,3 +117,12 @@
             CENTOS_VERSION=6
 
             CENTOS_ARCH=i386
+    - trigger-builds:
+        - project: gluster_build-rpms
+          block: false
+          predefined-parameters:
+            GERRIT_BRANCH=release-4.0
+
+            CENTOS_VERSION=7
+
+            CENTOS_ARCH=x86_64
