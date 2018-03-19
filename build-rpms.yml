@@ -22,6 +22,8 @@
         - master
         - release-3.12
         - release-3.10
+        - release-3.13
+        - release-4.0
         description: Gluster branch to build RPMs
         name: GERRIT_BRANCH
     - choice:
