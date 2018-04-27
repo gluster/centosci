@@ -38,6 +38,7 @@
     builders:
     - shell: !include-raw: scripts/common/get-node-to-ansible.sh
     - shell: !include-raw: scripts/glusto/run-glusto-main.sh
+    - shell: !include-raw: scripts/glusto/get-glusto-logs.sh
 
     publishers:
     - archive:
@@ -54,6 +55,12 @@
             - log-text: Building remotely
           script:
             !include-raw: scripts/common/return-node.sh
+        - matches:
+            - log-text: Build was aborted
+          script:
+            !include-raw: scripts/glusto/get-glusto-logs.sh
+
+
 
     wrappers:
     - ansicolor:

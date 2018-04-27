@@ -25,8 +25,4 @@ done
 scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto.sh root@${host}:run-glusto.sh
 ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host ./run-glusto.sh -m $GLUSTO_MODULE
 JENKINS_STATUS=$?
-#ANSIBLE_HOST_KEY_CHECKING=False $HOME/env/bin/ansible-playbook -i hosts scripts/glusto/get-gluster-logs.yml
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host:/root/gluster-logs.gz .
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host:/tmp/glustomain.log .
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host:/tmp/*junit.xml .
 exit $JENKINS_STATUS
