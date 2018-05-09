@@ -7,42 +7,42 @@
     args:
       creates: "{{ lookup('env', 'WORKSPACE')}}/glusto"
 
-- hosts: gluster_nodes[0]
-  tasks:
-  - name: Copy ssh key
-    copy: src="{{ lookup('env', 'WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
+#- hosts: gluster_nodes[0]
+  #tasks:
+  #- name: Copy ssh key
+    #copy: src="{{ lookup('env', 'WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
 
-  - name: Install nginx
-    yum: name={{ item }} state=installed
-    with_items:
-    - nginx
+  #- name: Install nginx
+    #yum: name={{ item }} state=installed
+    #with_items:
+    #- nginx
 
-  - name: Install the nginx config file
-    copy:
-      src: nginx.conf
-      dest: /etc/nginx/default.d/rpm.conf
+  #- name: Install the nginx config file
+    #copy:
+      #src: nginx.conf
+      #dest: /etc/nginx/default.d/rpm.conf
 
-  - name: Create /var/www
-    file:
-      path: /var/www
-      state: directory
+  #- name: Create /var/www
+    #file:
+      #path: /var/www
+      #state: directory
 
-  - name: Copy packages to /var/www
-    command: cp -r /root/glusterfs/RPMS/ /var/www/
+  #- name: Copy packages to /var/www
+    #command: cp -r /root/glusterfs/RPMS/ /var/www/
 
-  - name: Setup SELinux context
-    command: restorecon -R /var/www/
+  #- name: Setup SELinux context
+    #command: restorecon -R /var/www/
 
-  - name: Open port 80 on the firewall
-    command: firewall-cmd --permanent --zone=public --add-port=80/tcp
+  #- name: Open port 80 on the firewall
+    #command: firewall-cmd --permanent --zone=public --add-port=80/tcp
 
-  - name: Reload firewall config
-    command: firewall-cmd --reload
+  #- name: Reload firewall config
+    #command: firewall-cmd --reload
 
-  - name: Start nginx
-    service:
-      name: nginx
-      state: restarted
+  #- name: Start nginx
+    #service:
+      #name: nginx
+      #state: restarted
 
 - hosts: gluster_nodes[1:]
   tasks:
@@ -111,7 +111,8 @@
     yum_repository:
       name: gluster_nightly
       description: The nightly repo for Gluster
-      baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
+      #baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
+      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
       gpgcheck: no
       repo_gpgcheck: no
 
@@ -122,7 +123,7 @@
     - glusterfs-cli
     - glusterfs-debuginfo
 
-  - name: Install gluster
+  - name: Install gluster GNFS package
     yum: name=glusterfs-gnfs state=installed
     ignore_errors: True
 
@@ -222,7 +223,8 @@
     yum_repository:
       name: gluster_nightly
       description: The nightly repo for Gluster
-      baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
+      #baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
+      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
       gpgcheck: no
       repo_gpgcheck: no
 

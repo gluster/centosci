@@ -5,8 +5,8 @@
 host=$(cat hosts | grep ansible_host | head -n 1 | awk '{split($2, a, "="); print a[2]}')
 
 # Build gluster packages
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/build-rpms.sh root@${host}:build-rpms.sh
-ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host BRANCH=$BRANCH ./build-rpms.sh
+#scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/build-rpms.sh root@${host}:build-rpms.sh
+#ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host BRANCH=$BRANCH ./build-rpms.sh
 
 # Retry Ansible runs thrice
 MAX=3
