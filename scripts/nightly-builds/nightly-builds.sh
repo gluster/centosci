@@ -69,6 +69,7 @@ SRPM=$(rpmbuild --define 'dist .autobuild' --define "_srcrpmdir ${PWD}" \
 RESULTDIR=/srv/gluster/nightly/${GERRIT_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
 /usr/bin/mock \
     --root epel-${CENTOS_VERSION}-${CENTOS_ARCH} \
+    --with=gnfs \
     --resultdir ${RESULTDIR} \
     --rebuild ${SRPM}
 
