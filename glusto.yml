@@ -10,10 +10,10 @@
         default: '9'
         description: Number of nodes for this test
         name: NODE_COUNT
-    - string:
-        default: 'master'
-        description: Gluster branch to install RPMs
-        name: BRANCH
+    - bool:
+        default: True
+        description: Exit on first failure
+        name: EXIT_ON_FAIL
     - string:
         default: 'master'
         description: Gerrit ref for Glusto. For 12345/6 use 45/12345/6. Two fixed names you can use - stable and master.

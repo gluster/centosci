@@ -23,6 +23,6 @@ done
 
 # run the test command from master
 scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto.sh root@${host}:run-glusto.sh
-ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host ./run-glusto.sh -m $GLUSTO_MODULE
+ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host EXIT_ON_FAIL=$EXIT_ON_FAIL ./run-glusto.sh -m $GLUSTO_MODULE
 JENKINS_STATUS=$?
 exit $JENKINS_STATUS
