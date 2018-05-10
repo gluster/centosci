@@ -30,11 +30,13 @@ if [ $EXIT_ON_FAIL == True ]
     then
     SETX="-x"
 fi
+
 if [ "$MODULE" == "bvt" ]
     then
         glusto -c ../../gluster_tests_config.yml --pytest="-v $SETX functional/bvt/test_basic.py --junitxml=/tmp/bvt-junit.xml"
         glusto -c ../../gluster_tests_config.yml --pytest="-v $SETX functional/bvt/test_vvt.py --junitxml=/tmp/vvt-junit.xml"
     elif [ "$MODULE" == "cvt" ]
+    then
         glusto -c ../../gluster_tests_config.yml --pytest="-v $SETX functional/bvt/test_cvt.py  --junitxml=/tmp/cvt-junit.xml"
     else
         glusto -c ../../gluster_tests_config.yml --pytest="-v $SETX functional/$MODULE --junitxml=/tmp/$MODULE-junit.xml"
