@@ -70,7 +70,8 @@ RESULTDIR=/srv/gluster/nightly/${GERRIT_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
 /usr/bin/mock \
     --root epel-${CENTOS_VERSION}-${CENTOS_ARCH} \
     --resultdir ${RESULTDIR} \
-    --rebuild ${SRPM}
+    --rebuild ${SRPM} \
+    --rpmbuild-opts=--enable-gfns
 
 pushd ${RESULTDIR}
 createrepo_c .
