@@ -1,0 +1,64 @@
+- job:
+    name: gluster_glusto-patch-check
+    node: gluster
+    description: Run the functional tests from glusto-tests
+    project-type: freestyle
+    concurrent: true
+
+    parameters:
+    - string:
+        default: '9'
+        description: Number of nodes for this test
+        name: NODE_COUNT
+    - string:
+        default: 'master'
+        description: Gerrit ref for Glusto. For 12345/6 use 45/12345/6. Two fixed names you can use - stable and master.
+        name: GERRIT_REF
+    - string:
+        default: ''
+        description: The path to the test to run
+        name: GLUSTO_PATCH
+
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+        artifact-days-to-keep: 7
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node-to-ansible.sh
+    - shell: !include-raw: scripts/glusto/run-glusto-main.sh
+    - shell: !include-raw: scripts/glusto/get-glusto-logs.sh
+
+    publishers:
+    - archive:
+        artifacts: 'glustomain.log'
+        allow-empty: true
+    - archive:
+        artifacts: 'gluster-logs.gz'
+        allow-empty: true
+    - junit:
+        results: '*junit.xml'
+    - post-tasks:
+        - matches:
+            - log-text: Build was aborted
+          script:
+            !include-raw: scripts/glusto/get-glusto-logs.sh
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
+
+
+
+    wrappers:
+    - ansicolor:
+        colormap: xterm
+    - timestamps
