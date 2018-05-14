@@ -43,8 +43,6 @@
     - archive:
         artifacts: 'gluster-logs.gz'
         allow-empty: true
-    - junit:
-        results: '*junit.xml'
     - post-tasks:
         - matches:
             - log-text: Build was aborted
