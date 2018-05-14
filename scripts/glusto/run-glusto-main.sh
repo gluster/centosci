@@ -1,6 +1,5 @@
 #!/bin/bash
 # Run ansible script to setup everything
-
 # Get master IP
 host=$(grep ansible_host hosts | head -n 1 | awk '{split($2, a, "="); print a[2]}')
 
@@ -22,15 +21,15 @@ do
 done
 
 # run the test command from master
+set -x
 if [ -z "$GLUSTO_PATCH" ]; then
     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto.sh "root@${host}:run-glusto.sh"
     ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" EXIT_ON_FAIL="$EXIT_ON_FAIL" ./run-glusto.sh -m "$GLUSTO_MODULE"
     JENKINS_STATUS=$?
     exit $JENKINS_STATUS
-else
-    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto-patch.sh "root@${host}:run-glusto.sh"
+  else
+    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto-patch.sh "root@${host}:run-glusto-patch.sh"
     ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" ./run-glusto-patch.sh -m "$GLUSTO_PATCH"
     JENKINS_STATUS=$?
     exit $JENKINS_STATUS
-
 fi
