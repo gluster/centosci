@@ -288,7 +288,7 @@
 
   - name: Set glusto version
     set_fact:
-      GERRIT_REF: "{{ lookup('env', 'GERRIT_REF') }}"
+      GERRIT_REFSPEC: "{{ lookup('env', 'GERRIT_REFSPEC') }}"
 
   - name: Install Glusto
     pip: name=' git+git://github.com/loadtheaccumulator/glusto.git' editable=false
