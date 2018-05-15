@@ -30,7 +30,7 @@
     - gerrit:
         trigger-on:
           - comment-added-contains-event:
-              comment-contains-value: "run tests"
+              comment-contains-value: "/run tests"
         server-name: review.gluster.org
         projects:
           - project-compare-type: 'PLAIN'
