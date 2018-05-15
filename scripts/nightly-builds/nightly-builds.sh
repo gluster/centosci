@@ -71,7 +71,8 @@ RESULTDIR=/srv/gluster/nightly/${GERRIT_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
     --root epel-${CENTOS_VERSION}-${CENTOS_ARCH} \
     --with=gnfs \
     --resultdir ${RESULTDIR} \
-    --rebuild ${SRPM}
+    --rebuild ${SRPM} \
+    --rpmbuild-opts=--enable-gfns
 
 pushd ${RESULTDIR}
 createrepo_c .
