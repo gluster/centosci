@@ -293,20 +293,12 @@
   - name: Install Glusto
     pip: name=' git+git://github.com/loadtheaccumulator/glusto.git' editable=false
 
-  - name: Clone the gluster-tests repo - {{ GERRIT_REF}}
+  - name: Clone the glusto-tests repo - {{ GERRIT_REFSPEC}}
     git:
         repo: git://review.gluster.org/glusto-tests.git
         dest: /root/glusto-tests
-        refspec: "+refs/changes/{{GERRIT_REF}}:refs/remotes/origin/changes/{{GERRIT_REF}}"
+        refspec: "{{GERRIT_REFSPEC}}"
         version: FETCH_HEAD
-    when: GERRIT_REF != 'master' and GERRIT_REF != 'stable'
-
-  - name: Clone the gluster-tests repo
-    git:
-        repo: git://review.gluster.org/glusto-tests.git
-        dest: /root/glusto-tests
-        version: "{{GERRIT_REF}}"
-    when: GERRIT_REF == 'master' or GERRIT_REF == 'stable'
 
   - name: Install glustolibs
     command: "python setup.py develop chdir=/root/glusto-tests/{{item}}"
