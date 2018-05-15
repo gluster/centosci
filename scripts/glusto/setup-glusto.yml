@@ -3,9 +3,9 @@
 - hosts: localhost
   tasks:
   - name: Create an ssh keypair
-    shell: ssh-keygen -b 2048 -t rsa -f $WORKSPACE/glusto -q -N ""
+    shell: ssh-keygen -b 2048 -t rsa -f $GLUSTO_WORKSPACE/glusto -q -N ""
     args:
-      creates: "{{ lookup('env', 'WORKSPACE')}}/glusto"
+      creates: "{{ lookup('env', 'GLUSTO_WORKSPACE')}}/glusto"
 
 #- hosts: gluster_nodes[0]
   #tasks:
@@ -278,7 +278,7 @@
 - hosts: gluster_nodes[0]
   tasks:
   - name: Copy ssh key
-    copy: src="{{ lookup('env', 'WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
+    copy: src="{{ lookup('env', 'GLUSTO_WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
 
   - name: Install git and pip
     yum: name="{{item}}" state=present
