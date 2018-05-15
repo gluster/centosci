@@ -7,6 +7,19 @@ host=$(grep ansible_host hosts | head -n 1 | awk '{split($2, a, "="); print a[2]
 #scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/build-rpms.sh root@${host}:build-rpms.sh
 #ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$host BRANCH=$BRANCH ./build-rpms.sh
 
+set -x
+# Check if this is a patch run
+GLUSTO_WORKSPACE="$WORKSPACE"
+if [ -d "glusto" ]
+then
+  pushd glusto
+  GLUSTO_PATCH=$(git diff-tree --no-commit-id --name-only -r HEAD --diff-filter=AMR -- 'tests/*.py')
+  popd
+  mv hosts centosci/hosts
+  pushd centosci
+  GLUSTO_WORKSPACE="$WORKSPACE"/centosci
+fi
+export GLUSTO_WORKSPACE
 # Retry Ansible runs thrice
 MAX=3
 RETRY=0
@@ -21,7 +34,6 @@ do
 done
 
 # run the test command from master
-set -x
 if [ -z "$GLUSTO_PATCH" ]; then
     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto.sh "root@${host}:run-glusto.sh"
     ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" EXIT_ON_FAIL="$EXIT_ON_FAIL" ./run-glusto.sh -m "$GLUSTO_MODULE"

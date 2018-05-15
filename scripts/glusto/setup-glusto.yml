@@ -48,7 +48,7 @@
   tasks:
   - name: Set workspace
     set_fact:
-      workspace: "{{ lookup('env', 'WORKSPACE') }}"
+      workspace: "{{ lookup('env', 'GLUSTO_WORKSPACE') }}"
 
   - name: Add entries to authorized_keys
     authorized_key: user=root key="{{ lookup('file', workspace + '/glusto.pub')}}"
