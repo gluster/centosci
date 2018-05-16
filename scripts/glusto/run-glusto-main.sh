@@ -13,7 +13,7 @@ GLUSTO_WORKSPACE="$WORKSPACE"
 if [ -d "glusto" ]
 then
   pushd glusto
-  GLUSTO_PATCH=$(git diff-tree --no-commit-id --name-only -r HEAD --diff-filter=AMR -- 'tests/*.py' | sed 's#tests/##g' )
+  GLUSTO_PATCH=$(git diff-tree --no-commit-id --name-only -r HEAD --diff-filter=AMR -- 'tests/*.py' | sed 's#tests/##g' | sed '/__init__.py/d' | paste -s -d" ")
   popd
   mv hosts centosci/hosts
   pushd centosci
