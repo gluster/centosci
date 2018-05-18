@@ -1,0 +1,80 @@
+- job:
+    name: gluster_glusto-patch-check
+    node: gluster
+    description: Run the functional tests from glusto-tests
+    project-type: freestyle
+    concurrent: false
+
+    scm:
+    - git:
+        url: git://review.gluster.org/glusto-tests.git
+        choosing-strategy: gerrit
+        refspec: $GERRIT_REFSPEC
+        basedir: glusto
+        branches:
+        - $GERRIT_BRANCH
+        wipe-workspace: true
+    - git:
+        url: https://github.com/gluster/centosci.git
+        basedir: centosci
+        branches:
+        - origin/master
+        wipe-workspace: false
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+        artifact-days-to-keep: 7
+
+    triggers:
+    - gerrit:
+        trigger-on:
+          - comment-added-contains-event:
+              comment-contains-value: "/run tests"
+        server-name: review.gluster.org
+        projects:
+          - project-compare-type: 'PLAIN'
+            project-pattern: 'glusto-tests'
+            branches:
+              - branch-compare-type: 'ANT'
+                branch-pattern: '**'
+
+    parameters:
+    - string:
+        default: '9'
+        description: Number of nodes for this test
+        name: NODE_COUNT
+    - string:
+        default: refs/heads/master
+        description: Gerrit ref for Glusto. For 12345/6 use 45/12345/6. Two fixed names you can use - stable and master.
+        name: GERRIT_REFSPEC
+    - string:
+        default: ''
+        description: The path to the test to run
+        name: GLUSTO_PATCH
+    - string:
+        default: master
+        description: 'Name of the branch you want to build from. We usually build from master'
+        name: GERRIT_BRANCH
+
+    publishers:
+    - archive:
+        artifacts: 'glustomain.log'
+        allow-empty: true
+    - archive:
+        artifacts: 'gluster-logs.gz'
+        allow-empty: true
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
+
+    builders:
+      - shell: !include-raw: scripts/common/get-node-to-ansible.sh
+      - shell: !include-raw: scripts/glusto/run-glusto-main.sh
+      - shell: !include-raw: scripts/glusto/get-glusto-logs.sh
+
+    wrappers:
+    - timestamps

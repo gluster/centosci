@@ -3,9 +3,9 @@
 - hosts: localhost
   tasks:
   - name: Create an ssh keypair
-    shell: ssh-keygen -b 2048 -t rsa -f $WORKSPACE/glusto -q -N ""
+    shell: ssh-keygen -b 2048 -t rsa -f $GLUSTO_WORKSPACE/glusto -q -N ""
     args:
-      creates: "{{ lookup('env', 'WORKSPACE')}}/glusto"
+      creates: "{{ lookup('env', 'GLUSTO_WORKSPACE')}}/glusto"
 
 #- hosts: gluster_nodes[0]
   #tasks:
@@ -48,7 +48,7 @@
   tasks:
   - name: Set workspace
     set_fact:
-      workspace: "{{ lookup('env', 'WORKSPACE') }}"
+      workspace: "{{ lookup('env', 'GLUSTO_WORKSPACE') }}"
 
   - name: Add entries to authorized_keys
     authorized_key: user=root key="{{ lookup('file', workspace + '/glusto.pub')}}"
@@ -278,7 +278,7 @@
 - hosts: gluster_nodes[0]
   tasks:
   - name: Copy ssh key
-    copy: src="{{ lookup('env', 'WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
+    copy: src="{{ lookup('env', 'GLUSTO_WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
 
   - name: Install git and pip
     yum: name="{{item}}" state=present
@@ -288,25 +288,17 @@
 
   - name: Set glusto version
     set_fact:
-      GERRIT_REF: "{{ lookup('env', 'GERRIT_REF') }}"
+      GERRIT_REFSPEC: "{{ lookup('env', 'GERRIT_REFSPEC') }}"
 
   - name: Install Glusto
     pip: name=' git+git://github.com/loadtheaccumulator/glusto.git' editable=false
 
-  - name: Clone the gluster-tests repo - {{ GERRIT_REF}}
+  - name: Clone the glusto-tests repo - {{ GERRIT_REFSPEC}}
     git:
         repo: git://review.gluster.org/glusto-tests.git
         dest: /root/glusto-tests
-        refspec: "+refs/changes/{{GERRIT_REF}}:refs/remotes/origin/changes/{{GERRIT_REF}}"
+        refspec: "{{GERRIT_REFSPEC}}"
         version: FETCH_HEAD
-    when: GERRIT_REF != 'master' and GERRIT_REF != 'stable'
-
-  - name: Clone the gluster-tests repo
-    git:
-        repo: git://review.gluster.org/glusto-tests.git
-        dest: /root/glusto-tests
-        version: "{{GERRIT_REF}}"
-    when: GERRIT_REF == 'master' or GERRIT_REF == 'stable'
 
   - name: Install glustolibs
     command: "python setup.py develop chdir=/root/glusto-tests/{{item}}"
