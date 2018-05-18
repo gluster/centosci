@@ -7,10 +7,16 @@
     project-type: freestyle
 
 
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+
     builders:
-    - shell: |-
-        curl -o jenkins-job.py ${DUFFY_SCRIPT}
-        python jenkins-job.py
+    - shell: !include-raw scripts/common/jenkins-job.py
+
 
     properties:
     - github:
@@ -18,10 +24,6 @@
 
 
     parameters:
-    - string:
-        default: scripts/common/jenkins-job.py
-        description: Python script that reserves a machine from Duffy.
-        name: DUFFY_SCRIPT
     - string:
         default: scripts/common/run-test.sh
         description: Test script to execute on the reserved machine.
