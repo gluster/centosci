@@ -69,12 +69,17 @@
             # "Building remotely" should always be in the build console output
             - log-text: Building remotely
           script:
+            !include-raw: scripts/glusto/get-glusto-logs.sh
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
             !include-raw: scripts/common/return-node.sh
 
     builders:
       - shell: !include-raw: scripts/common/get-node-to-ansible.sh
       - shell: !include-raw: scripts/glusto/run-glusto-main.sh
-      - shell: !include-raw: scripts/glusto/get-glusto-logs.sh
 
     wrappers:
     - timestamps
