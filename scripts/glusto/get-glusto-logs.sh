@@ -1,6 +1,6 @@
 #!/bin/bash
-set +e
 set -x
+set +e
 if [ -d "glusto" ]
     then
     pushd centosci
