@@ -22,7 +22,7 @@
     properties:
     - build-discarder:
         days-to-keep: 7
-
+    publishers:
     - post-tasks:
         - matches:
             # "Building remotely" should always be in the build console output
