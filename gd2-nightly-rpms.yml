@@ -1,0 +1,31 @@
+- job:
+    name: gluster_gd2-nightly-rpms
+    node: gluster
+    description: Build GD2 nightly RPMs.
+    project-type: freestyle
+    concurrent: true
+
+    triggers:
+    - timed: '@midnight'
+
+    scm:
+      - git:
+          url: https://github.com/gluster/centosci.git
+          branches:
+          - origin/master
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: !include-raw: scripts/common/rsync.sh
+    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/gd2-nightly/build.sh
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
