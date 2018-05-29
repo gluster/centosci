@@ -7,12 +7,13 @@ CENTOS_ARCH=${CENTOS_ARCH:-x86_64}
 REPO_DIR=glusterd2/nightly
 REPO_NAME='gd2-master'
 REPO_VERSION='master'
+RSYNC_DIR=gluster/gd2-nightly
 
 
 artifact()
 {
     [ -e ~/rsync.passwd ] || return 0
-    rsync -av --password-file ~/rsync.passwd "${@}" gluster@artifacts.ci.centos.org::${REPO_DIR}/
+    rsync -av --password-file ~/rsync.passwd "${@}" gluster@artifacts.ci.centos.org::${RSYNC_DIR}/
 }
 
 set -e
@@ -47,4 +48,4 @@ artifact "${REPO_NAME}.repo"
 artifact "${GIT_BRANCH}"
 popd
 
-exit "${RET}"
+exit
