@@ -39,7 +39,7 @@ popd
 
 cat > "/srv/${REPO_DIR}/${REPO_NAME}.repo" <<< "[glusterd2-nightly-${REPO_VERSION}]
 name=GD2 Nightly builds (${GIT_BRANCH} branch)
-baseurl=http://artifacts.ci.centos.org/${REPO_DIR}/${GIT_BRANCH}/\$releasever/\$basearch
+baseurl=http://artifacts.ci.centos.org/${RSYNC_DIR}/${GIT_BRANCH}/\$releasever/\$basearch
 enabled=1
 gpgcheck=0"
 
