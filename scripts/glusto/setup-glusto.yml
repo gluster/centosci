@@ -146,6 +146,7 @@
     - ['data0', 'data1', 'data2', 'data3']
     loop_control:
       pause: 2
+    ignore_errors: True
 
   - name: Create physical volume
     command: "pvcreate /dev/{{item}}"
@@ -156,6 +157,7 @@
     - loop3
     loop_control:
       pause: 2
+    ignore_errors: True
 
   - name: Create volume groups
     lvg:
