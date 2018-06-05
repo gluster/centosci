@@ -92,11 +92,21 @@
   - name: Flush iptables
     command: "iptables -X"
 
+  - name: Setup arequal repo
+    yum_repository:
+      name: nigelbabu-arequal
+      description: Copr repo for arequal
+      baseurl: https://copr-be.cloud.fedoraproject.org/results/nigelbabu/arequal/epel-7-$basearch/
+      gpgcheck: yes
+      gpgkey: https://copr-be.cloud.fedoraproject.org/results/nigelbabu/arequal/pubkey.gpg
+      repo_gpgcheck: no
+
   - name: Install dependency packages
     yum: name={{ item }} state=installed
     with_items:
     - nfs-utils
     - cifs-utils
+    - arequal
 
 # Set up servers
 - hosts: gluster_nodes[1:6]
