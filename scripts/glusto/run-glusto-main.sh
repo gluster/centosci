@@ -40,7 +40,7 @@ if [ -z "$GLUSTO_PATCH" ]; then
     JENKINS_STATUS=$?
   else
     scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto-patch.sh "root@${host}:run-glusto-patch.sh"
-    ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" ./run-glusto-patch.sh -p "$GLUSTO_PATCH"
+    ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" EXIT_ON_FAIL=True ./run-glusto-patch.sh -p "$GLUSTO_PATCH"
     JENKINS_STATUS=$?
 fi
 source $GLUSTO_WORKSPACE/scripts/glusto/get-glusto-logs.sh
