@@ -9,14 +9,14 @@
   - name: Copy gluster logs
     synchronize:
       src: /var/log/glusterfs
-      dest: "{{ /root/gluster-logs/{{ item }}-{{ hostvars[item]['ansible_host'] }}"
+      dest: "/root/gluster-logs/{{ item }}-{{ hostvars[item]['ansible_host'] }}"
     delegate_to: "{{ item }}"
     with_items: "{{ groups['gluster_nodes'][1:] }}"
 
   - name: Copy samba logs
     synchronize:
       src: /var/log/samba
-      dest: "{{ /root/gluster-logs/{{ item }}-{{ hostvars[item]['ansible_host'] }}"
+      dest: "/root/gluster-logs/{{ item }}-{{ hostvars[item]['ansible_host'] }}"
     delegate_to: "{{ item}}"
     with_items: "{{ groups['gluster_nodes'][1:6] }}"
 

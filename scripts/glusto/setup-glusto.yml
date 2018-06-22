@@ -107,6 +107,7 @@
     - nfs-utils
     - cifs-utils
     - arequal
+    - rsync
 
 # Set up servers
 - hosts: gluster_nodes[1:6]
