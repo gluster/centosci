@@ -64,12 +64,23 @@ SRPM=$(rpmbuild --define 'dist .autobuild' --define "_srcrpmdir ${PWD}" \
     --define '_source_filedigest_algorithm 1' \
     -ts glusterfs-${VERSION}.tar.gz | cut -d' ' -f 2)
 
+MOCK_RPM_OPTS=''
+case "${CENTOS_VERSION}/${GIT_VERSION}" in
+    6/4*)
+        # CentOS-6 does not support server builds from Gluster 4.0 onwards
+        MOCK_RPM_OPTS='--without=server'
+    *)
+        # gnfs is not enabled by default, but our regression tests depend on it
+        MOCK_RPM_OPTS='--with=gnfs'
+        ;;
+esac
+
 # do the actual RPM build in mock
 # TODO: use a CentOS Storage SIG buildroot
 RESULTDIR=/srv/gluster/nightly/${GERRIT_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
 /usr/bin/mock \
     --root epel-${CENTOS_VERSION}-${CENTOS_ARCH} \
-    --with=gnfs \
+    ${MOCK_RPM_OPTS} \
     --resultdir ${RESULTDIR} \
     --rebuild ${SRPM}
 
