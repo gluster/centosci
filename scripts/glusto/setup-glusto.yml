@@ -299,6 +299,7 @@
     - git
     - python-pip
     - gcc
+    - python-devel
 
   - name: Set glusto version
     set_fact:
