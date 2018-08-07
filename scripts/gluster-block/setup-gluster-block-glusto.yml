@@ -202,8 +202,9 @@
     - autoconf
     - gcc
     - glib2-devel
-    - "*kmod*"
-    - "libnl3*"
+    - kmod-devel
+    - python-kmod
+    - libnl3-devel
     - zlib-devel
     - cmake
     - python-pip
