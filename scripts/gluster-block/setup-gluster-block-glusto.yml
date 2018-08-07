@@ -186,10 +186,6 @@
   - name: Status rpcbind
     service: name=rpcbind state=started
 
-
-#Set up gluster-block and related packages on servers
-- hosts: gluster_nodes[1:4]
-  tasks:
   - name: Install dependency packages
     yum: name={{ item }} state=installed
     with_items:
@@ -238,10 +234,14 @@
         repo: https://github.com/open-iscsi/tcmu-runner
         dest: /root/tcmu-runner
 
+  - replace:
+      path: /root/tcmu-runner/target_core_user_local.h
+      regexp: '^#include <linux/uio\.h>'
+      replace: '#include <sys/uio.h>'
+
   - name: Install tcmu-runner
     command: 'chdir=/root/tcmu-runner {{ item }}'
     with_items:
-    -  sed -i "s/linux\/uio.h/sys\/uio.h/" target_core_user_local.h
     -  cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -Dwith-rbd=false -Dwith-qcow=false -DSUPPORT_SYSTEMD=ON -DCMAKE_BUILD_TYPE=Debug
     -  make install
 
