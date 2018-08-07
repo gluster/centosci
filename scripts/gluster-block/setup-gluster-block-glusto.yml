@@ -1,0 +1,356 @@
+# vim:ft=ansible:
+---
+
+#Generate a ssh key pair
+- hosts: localhost
+  tasks:
+  - name: Create an ssh keypair
+    shell: ssh-keygen -b 2048 -t rsa -f $GLUSTO_WORKSPACE/glusto -q -N ""
+    args:
+      creates: "{{ lookup('env', 'GLUSTO_WORKSPACE')}}/glusto"
+
+#Copy the public key to all nodes other than the host node
+- hosts: gluster_nodes[1:]
+  tasks:
+  - name: Set workspace
+    set_fact:
+      workspace: "{{ lookup('env', 'GLUSTO_WORKSPACE') }}"
+
+  - name: Add entries to authorized_keys
+    authorized_key: user=root key="{{ lookup('file', workspace + '/glusto.pub')}}"
+
+#Install epel 
+- hosts: gluster_nodes
+  tasks:
+  - name: Setup EPEL
+    yum: name=epel-release state=installed
+
+
+# Server and client tasks
+- hosts: gluster_nodes[1:5]
+  tasks:
+  - name: Disable ipv6 in eth0 config
+    lineinfile:
+      dest: /etc/sysconfig/network-scripts/ifcfg-eth0
+      regexp: ^IPV6INIT=
+      line: IPV6INIT=no
+
+  - name: Disable ipv6 in network config
+    lineinfile:
+      dest: /etc/sysconfig/network
+      regexp: ^NETWORKING_IPV6=
+      line: NETWORKING_IPV6=no
+
+  - name: Disable ipv6 in sysctl
+    sysctl:
+      name: "{{ item }}"
+      value: 1
+      state: present
+      reload: yes
+    with_items:
+    - net.ipv6.conf.all.disable_ipv6
+    - net.ipv6.conf.default.disable_ipv6
+
+  - name: Stop Firewall
+    service: name=firewalld state=stopped
+
+  - name: Flush iptables
+    command: "iptables -F"
+
+  - name: Flush iptables
+    command: "iptables -X"
+
+  - name: Setup arequal repo
+    yum_repository:
+      name: nigelbabu-arequal
+      description: Copr repo for arequal
+      baseurl: https://copr-be.cloud.fedoraproject.org/results/nigelbabu/arequal/epel-7-$basearch/
+      gpgcheck: yes
+      gpgkey: https://copr-be.cloud.fedoraproject.org/results/nigelbabu/arequal/pubkey.gpg
+      repo_gpgcheck: no
+
+  - name: Install dependency packages
+    yum: name={{ item }} state=installed
+    with_items:
+    - nfs-utils
+    - cifs-utils
+    - arequal
+    - rsync
+
+# Set up servers for glusterfs
+- hosts: gluster_nodes[1:4]
+  tasks:
+
+  - name: Install dependency packages
+    yum: name={{ item }} state=installed
+    with_items:
+    - libibverbs
+
+  - name: Setup the repo
+    yum_repository:
+      name: gluster_nightly
+      description: The nightly repo for Gluster
+      #baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
+      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
+      gpgcheck: no
+      repo_gpgcheck: no
+
+  - name: Install gluster
+    yum: name={{ item }} state=installed
+    with_items:
+    - glusterfs-server
+    - glusterfs-cli
+    - glusterfs-debuginfo
+
+  - name: Install gluster GNFS package
+    yum: name=glusterfs-gnfs state=installed
+    ignore_errors: True
+
+  - name: Allocate space to a file
+    command: "fallocate -l 50G /var/{{item}}"
+    args:
+      creates: "/var/{{item}}"
+    with_items:
+    - data0
+    - data1
+    - data2
+    - data3
+
+  - name: Associate loopback device to file
+    command: "losetup -f /var/{{item.1}}"
+    args:
+      creates: "/dev/{{item.0}}"
+    with_together:
+    - ['loop0', 'loop1', 'loop2', 'loop3']
+    - ['data0', 'data1', 'data2', 'data3']
+    loop_control:
+      pause: 2
+    ignore_errors: True
+
+  - name: Create physical volume
+    command: "pvcreate /dev/{{item}}"
+    with_items:
+    - loop0
+    - loop1
+    - loop2
+    - loop3
+    loop_control:
+      pause: 2
+    ignore_errors: True
+
+  - name: Create volume groups
+    lvg:
+      vg: "{{item.0}}"
+      pvs: "/dev/{{item.1}}"
+    ignore_errors: yes
+    with_together:
+    - ['group0', 'group1', 'group2', 'group3']
+    - ['loop0', 'loop1', 'loop2', 'loop3']
+
+  - name: Create thin pool
+    command: "lvcreate -L 45G -T {{item}}/pool"
+    args:
+      creates: "/dev/{{item}}"
+    ignore_errors: yes
+    with_items:
+    - group0
+    - group1
+    - group2
+    - group3
+
+  - name: Create thin volume
+    command: "lvcreate -V 45G -T {{item.0}}/pool -n {{item.1}}"
+    args:
+      creates: "/dev/{{item.0}}/{{item.1}}"
+    ignore_errors: yes
+    with_together:
+    - ['group0', 'group1', 'group2', 'group3']
+    - ['vol0', 'vol1', 'vol2', 'vol3']
+
+  - name: Format the volumes
+    command: "mkfs.xfs /dev/{{item.0}}/{{item.1}}"
+    ignore_errors: yes
+    with_together:
+    - ['group0', 'group1', 'group2', 'group3']
+    - ['vol0', 'vol1', 'vol2', 'vol3']
+
+  - name: Mount the bricks
+    mount: name="/mnt/{{item.0}}" src="/dev/{{item.1}}" state=mounted fstype=xfs
+    with_together:
+    - ['vol0', 'vol1', 'vol2', 'vol3']
+    - ['group0/vol0', 'group1/vol1', 'group2/vol2', 'group3/vol3']
+
+  - name: Start Gluster Daemon
+    service: name=glusterd state=started
+
+  - name: Status rpcbind
+    service: name=rpcbind state=started
+
+
+#Set up gluster-block and related packages on servers
+- hosts: gluster_nodes[1:4]
+  tasks:
+  - name: Install dependency packages
+    yum: name={{ item }} state=installed
+    with_items:
+    - git
+    - libtool
+    - libuuid-devel
+    - python-gobject
+    - glusterfs-api-devel
+    - automake
+    - autoconf
+    - gcc
+    - glib2-devel
+    - "*kmod*"
+    - "libnl3*"
+    - zlib-devel
+    - cmake
+
+  - name: Clone configshell-fb repo
+    git:
+        repo: https://github.com/open-iscsi/configshell-fb
+        dest: /root/configshell-fb
+
+  - name: Install configshell-fb repo
+    command: "python setup.py install chdir=/root/configshell-fb"
+
+  - name: Clone rtslib repo
+    git:
+        repo: https://github.com/open-iscsi/rtslib-fb
+        dest: /root/rtslib-fb
+
+  - name: Install rtslib
+    command: "python setup.py install chdir=/root/rtslib-fb"
+
+  - name: Clone targetcli-fb repo
+    git:
+        repo: https://github.com/open-iscsi/targetcli-fb
+        dest: /root/targetcli-fb
+
+  - name: Install targetcli-fb
+    command: "python setup.py install chdir=/root/targetcli-fb"
+
+  - name: Clone tcmu-runner repo
+    git:
+        repo: https://github.com/open-iscsi/tcmu-runner
+        dest: /root/tcmu-runner
+
+  - name: Install tcmu-runner
+    command: 'chdir=/root/tcmu-runner {{ item }}'
+    with_items:
+    -  sed -i "s/linux\/uio.h/sys\/uio.h/" target_core_user_local.h
+    -  cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -Dwith-rbd=false -Dwith-qcow=false -DSUPPORT_SYSTEMD=ON -DCMAKE_BUILD_TYPE=Debug
+    -  make install
+
+  - name: Create /etc/target if it does not exist 
+    command: 'if [ ! -d "/etc/target" ]; then mkdir /etc/target ; fi'
+
+  - name: Copy target.service
+    command: 'chdir=/root/rtslib-fb {{ item }}'
+    with_items:
+    -   cp systemd/target.service /usr/lib/systemd/system/
+
+  - name: Clone gluster-block repo
+    git:
+        repo: https://github.com/gluster/gluster-block
+        dest: /root/gluster-block
+
+
+  - name: Install gluster-block
+    command: 'chdir=/root/gluster-block {{ item }}'
+    with_items:
+    -  ./autogen.sh
+    -  ./configure
+    -  make
+    -  make install
+
+  - name: Start gluster-block Daemon
+    service: name=gluster-blockd state=started
+
+# Setup packages for gluster-block on client
+- hosts: gluster_nodes[5]
+  tasks:
+  - name: Install dependency packages
+    yum: name={{ item }} state=installed
+    with_items:
+    - iscsi-initiator-utils 
+    - device-mapper-multipath
+
+  - name: Start iscsi Daemon
+    service: name=iscsid state=started
+
+  - name: set multipath
+    command: "modprobe dm_multipath"
+
+  - name: Set multipath
+    command:  "mpathconf --enable"
+
+  - name: append the multipath.conf file
+    blockinfile:
+        dest: /etc/multipath.conf
+        block: |
+            # LIO iSCSI
+            devices {
+                device {
+                    vendor "LIO-ORG"
+                    user_friendly_names "yes" # names like mpatha
+                    path_grouping_policy "failover" # one path per group
+                    path_selector "round-robin 0"
+                    failback immediate
+                    path_checker "tur"
+                    prio "const"
+                    no_path_retry 120
+                    rr_weight "uniform"
+                }
+            }
+        backup: yes
+
+  - name: Restart multipath daemon
+    service: name=multipathd state=restarted
+
+#peer probe all nodes
+- hosts: gluster_nodes[1]
+  tasks:
+  - name: Peer probe all nodes
+    command: "gluster peer probe {{hostvars[item]['ansible_eth0']['ipv4']['address']}}"
+    with_items: "{{groups['gluster_nodes'][2:4]}}"
+
+  - name: Setup SELinux in permissive mode
+    selinux: policy=targeted state=enforcing
+
+
+# Set up glusto packages on the host node
+- hosts: gluster_nodes[0]
+  tasks:
+  - name: Copy ssh key
+    copy: src="{{ lookup('env', 'GLUSTO_WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
+
+  - name: Install git and pip
+    yum: name="{{item}}" state=present
+    with_items:
+    - git
+    - python-pip
+
+  - name: Install Glusto
+    pip: name=' git+git://github.com/loadtheaccumulator/glusto.git' editable=false
+
+  - name: Clone the glusto-tests repo
+    git:
+        repo: git://review.gluster.org/glusto-tests.git
+        dest: /root/glusto-tests
+
+  - name: Install glustolibs
+    command: "python setup.py develop chdir=/root/glusto-tests/{{item}}"
+    with_items:
+    - glustolibs-gluster
+    - glustolibs-io
+    - glustolibs-misc
+
+  - name: Clone gluster-block repo
+    git:
+        repo: https://github.com/gluster/gluster-block
+        dest: /root/gluster-block
+
+  - name: Create the config file
+    template: src="{{ lookup('env', 'GLUSTO_WORKSPACE') }}/scripts/gluster-block/gluster_block_glusto_tests_config.yml.j2" dest=/root/gluster_tests_config.yml
