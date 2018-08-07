@@ -10,6 +10,18 @@ rm -rf $ANSIBLE_HOSTS
 
 # Get nodes
 nodes=$(cico -q node get --count ${NODE_COUNT} --column hostname --column ip_address --column comment -f value)
+cico_ret=$?
+
+# Fail in case cico returned an error, or no nodes at all
+if [ ${cico_ret} -ne 0 ]
+then
+    echo "cico returned an error (${cico_ret})"
+    exit 2
+elif [ -z "${nodes}" ]
+then
+    echo "cico failed to return any systems"
+    exit 2
+fi
 
 # Write nodes to inventory file and persist the SSID separately for simplicity
 touch ${SSID_FILE}
