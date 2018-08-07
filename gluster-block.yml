@@ -33,7 +33,7 @@
 
     builders:
     - shell: !include-raw: scripts/common/get-node-to-ansible.sh
-    - shell: !include-raw: scripts/gluster-block/run-glusto-main.sh
+    - shell: !include-raw: scripts/gluster-block/run_glusto_main.sh
     - shell: !include-raw: scripts/gluster-block/get-glusto-logs.sh
 
     publishers:

@@ -19,7 +19,7 @@
   - name: Add entries to authorized_keys
     authorized_key: user=root key="{{ lookup('file', workspace + '/glusto.pub')}}"
 
-#Install epel 
+#Install epel
 - hosts: gluster_nodes
   tasks:
   - name: Setup EPEL
@@ -206,6 +206,7 @@
     - "libnl3*"
     - zlib-devel
     - cmake
+    - python-pip
 
   - name: Clone configshell-fb repo
     git:
@@ -243,7 +244,7 @@
     -  cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -Dwith-rbd=false -Dwith-qcow=false -DSUPPORT_SYSTEMD=ON -DCMAKE_BUILD_TYPE=Debug
     -  make install
 
-  - name: Create /etc/target if it does not exist 
+  - name: Create /etc/target if it does not exist
     command: 'if [ ! -d "/etc/target" ]; then mkdir /etc/target ; fi'
 
   - name: Copy target.service
@@ -274,7 +275,7 @@
   - name: Install dependency packages
     yum: name={{ item }} state=installed
     with_items:
-    - iscsi-initiator-utils 
+    - iscsi-initiator-utils
     - device-mapper-multipath
 
   - name: Start iscsi Daemon
