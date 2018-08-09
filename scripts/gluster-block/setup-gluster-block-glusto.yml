@@ -193,7 +193,6 @@
     - libtool
     - libuuid-devel
     - python-gobject
-    - glusterfs-api-devel
     - automake
     - autoconf
     - gcc
@@ -205,6 +204,9 @@
     - cmake
     - python-pip
     - json-c-devel
+
+  - name: Copy rpm file to server
+    command: rpm -i http://mirror.centos.org/centos/7/storage/x86_64/gluster-3.12/glusterfs-devel-3.12.9-1.el7.x86_64.rpm
 
   - name: Clone configshell-fb repo
     git:
