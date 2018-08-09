@@ -204,6 +204,7 @@
     - zlib-devel
     - cmake
     - python-pip
+    - json-c-devel
 
   - name: Clone configshell-fb repo
     git:
@@ -234,11 +235,6 @@
         repo: https://github.com/open-iscsi/tcmu-runner
         dest: /root/tcmu-runner
 
-  - replace:
-      path: /root/tcmu-runner/target_core_user_local.h
-      regexp: '^#include <linux/uio\.h>'
-      replace: '#include <sys/uio.h>'
-
   - name: Install tcmu-runner
     command: 'chdir=/root/tcmu-runner {{ item }}'
     with_items:
@@ -246,7 +242,9 @@
     -  make install
 
   - name: Create /etc/target if it does not exist
-    command: 'if [ ! -d "/etc/target" ]; then mkdir /etc/target ; fi'
+    file:
+        path: /etc/target
+        state: directory
 
   - name: Copy target.service
     command: 'chdir=/root/rtslib-fb {{ item }}'
