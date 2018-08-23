@@ -13,7 +13,7 @@ set -e
 yum -y install git autoconf automake gcc libtool bison flex make rpm-build mock createrepo_c
 # gluster repositories contain additional -devel packages
 yum -y install centos-release-gluster
-yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel
+yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel e2fsprogs-libuuid
 
 # clone the repository, github is faster than our Gerrit
 #git clone https://review.gluster.org/glusterfs
