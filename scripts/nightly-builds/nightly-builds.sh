@@ -69,6 +69,7 @@ case "${CENTOS_VERSION}/${GIT_VERSION}" in
     6/4*)
         # CentOS-6 does not support server builds from Gluster 4.0 onwards
         MOCK_RPM_OPTS='--without=server'
+        ;;
     *)
         # gnfs is not enabled by default, but our regression tests depend on it
         MOCK_RPM_OPTS='--with=gnfs'
