@@ -15,9 +15,9 @@
       mode: pull
     delegate_to: "{{ groups['gluster_nodes'][0] }}"
 
-  - name: Copy samba logs
+  - name: Copy gluster-block logs
     synchronize:
-      src: /var/log/samba
+      src: /var/log/gluster-block
       dest: "/root/gluster-logs/{{ ansible_hostname }}-{{ ansible_eth0.ipv4.address }}"
       mode: pull
     delegate_to: "{{ groups['gluster_nodes'][0] }}"
@@ -28,4 +28,4 @@
     archive:
       path: "/root/gluster-logs"
       format: gz
-      dest: "/root/gluster-logs.gz"
+dest: "/root/gluster-logs.gz"

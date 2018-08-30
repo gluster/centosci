@@ -1,0 +1,69 @@
+- job:
+    name: gluster_heketi-functional
+    node: gluster
+    description: Run the functional test from upstream Heketi against the
+      latest build of the glusterfs packages. A new run is executed
+      automatically against the nightly builds of the master branch.
+    project-type: freestyle
+    concurrent: true
+
+    parameters:
+    - string:
+        default: '1'
+        description: Number of nodes for this test
+        name: NODE_COUNT
+    - string:
+        default: ''
+        description: ghprbPullId will be set when the build is triggered
+          through a GitHub pull-request, leave empty for running a test against
+          the master branch
+        name: ghprbPullId
+
+    scm:
+    - git:
+        url: https://github.com/heketi/ci-tests
+        branches:
+        - origin/centos-ci
+
+    properties:
+    - github:
+        url: https://github.com/heketi/heketi
+    - build-discarder:
+        days-to-keep: 7
+        artifact-days-to-keep: 7
+
+    triggers:
+    - github-pull-request:
+        admin-list:
+        - SaravanaStorageNetwork
+        - humblec
+        - jarrpa
+        - nixpanic
+        - obnoxxx
+        - phlogistonjohn
+        - raghavendra-talur
+        cron: H/5 * * * *
+        status-context: centos-ci
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    # the heketi/ci-tests repo contains a copy of bootstrap.sh from the
+    # gluster/centosci repo
+    - shell: ./bootstrap.sh heketi-centos-ci-tests.sh "ghprbPullId=${ghprbPullId}"
+
+    publishers:
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
+
+    wrappers:
+    - ansicolor:
+        colormap: xterm
+    - timestamps
+    - timeout:
+        # current build takes more than 75 minutes, this gives some slack
+        timeout: 120
+        abort: true

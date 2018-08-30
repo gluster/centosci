@@ -13,7 +13,7 @@ set -e
 yum -y install git autoconf automake gcc libtool bison flex make rpm-build mock createrepo_c
 # gluster repositories contain additional -devel packages
 yum -y install centos-release-gluster
-yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel
+yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel libuuid-devel
 
 # clone the repository, github is faster than our Gerrit
 #git clone https://review.gluster.org/glusterfs
@@ -64,12 +64,24 @@ SRPM=$(rpmbuild --define 'dist .autobuild' --define "_srcrpmdir ${PWD}" \
     --define '_source_filedigest_algorithm 1' \
     -ts glusterfs-${VERSION}.tar.gz | cut -d' ' -f 2)
 
+MOCK_RPM_OPTS=''
+case "${CENTOS_VERSION}/${GIT_VERSION}" in
+    6/4*)
+        # CentOS-6 does not support server builds from Gluster 4.0 onwards
+        MOCK_RPM_OPTS='--without=server'
+        ;;
+    *)
+        # gnfs is not enabled by default, but our regression tests depend on it
+        MOCK_RPM_OPTS='--with=gnfs'
+        ;;
+esac
+
 # do the actual RPM build in mock
 # TODO: use a CentOS Storage SIG buildroot
 RESULTDIR=/srv/gluster/nightly/${GERRIT_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
 /usr/bin/mock \
     --root epel-${CENTOS_VERSION}-${CENTOS_ARCH} \
-    --with=gnfs \
+    ${MOCK_RPM_OPTS} \
     --resultdir ${RESULTDIR} \
     --rebuild ${SRPM}
 

@@ -1,5 +1,7 @@
 # vim:ft=ansible:
 ---
+
+#Generate a ssh key pair
 - hosts: localhost
   tasks:
   - name: Create an ssh keypair
@@ -7,43 +9,7 @@
     args:
       creates: "{{ lookup('env', 'GLUSTO_WORKSPACE')}}/glusto"
 
-#- hosts: gluster_nodes[0]
-  #tasks:
-  #- name: Copy ssh key
-    #copy: src="{{ lookup('env', 'WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
-
-  #- name: Install nginx
-    #yum: name={{ item }} state=installed
-    #with_items:
-    #- nginx
-
-  #- name: Install the nginx config file
-    #copy:
-      #src: nginx.conf
-      #dest: /etc/nginx/default.d/rpm.conf
-
-  #- name: Create /var/www
-    #file:
-      #path: /var/www
-      #state: directory
-
-  #- name: Copy packages to /var/www
-    #command: cp -r /root/glusterfs/RPMS/ /var/www/
-
-  #- name: Setup SELinux context
-    #command: restorecon -R /var/www/
-
-  #- name: Open port 80 on the firewall
-    #command: firewall-cmd --permanent --zone=public --add-port=80/tcp
-
-  #- name: Reload firewall config
-    #command: firewall-cmd --reload
-
-  #- name: Start nginx
-    #service:
-      #name: nginx
-      #state: restarted
-
+#Copy the public key to all nodes other than the host node
 - hosts: gluster_nodes[1:]
   tasks:
   - name: Set workspace
@@ -53,13 +19,15 @@
   - name: Add entries to authorized_keys
     authorized_key: user=root key="{{ lookup('file', workspace + '/glusto.pub')}}"
 
+#Install epel
 - hosts: gluster_nodes
   tasks:
   - name: Setup EPEL
     yum: name=epel-release state=installed
 
+
 # Server and client tasks
-- hosts: gluster_nodes[1:8]
+- hosts: gluster_nodes[1:5]
   tasks:
   - name: Disable ipv6 in eth0 config
     lineinfile:
@@ -109,8 +77,8 @@
     - arequal
     - rsync
 
-# Set up servers
-- hosts: gluster_nodes[1:6]
+# Set up servers for glusterfs
+- hosts: gluster_nodes[1:4]
   tasks:
 
   - name: Install dependency packages
@@ -218,76 +186,141 @@
   - name: Status rpcbind
     service: name=rpcbind state=started
 
-# Setup client
-- hosts: gluster_nodes[7:8]
+  - name: Install dependency packages
+    yum: name={{ item }} state=installed
+    with_items:
+    - git
+    - libtool
+    - libuuid-devel
+    - python-gobject
+    - glusterfs-api-devel
+    - automake
+    - autoconf
+    - gcc
+    - glib2-devel
+    - kmod-devel
+    - python-kmod
+    - libnl3-devel
+    - zlib-devel
+    - cmake
+    - python-pip
+    - json-c-devel
+
+  - name: Clone configshell-fb repo
+    git:
+        repo: https://github.com/open-iscsi/configshell-fb
+        dest: /root/configshell-fb
+
+  - name: Install configshell-fb repo
+    command: "python setup.py install chdir=/root/configshell-fb"
+
+  - name: Clone rtslib repo
+    git:
+        repo: https://github.com/open-iscsi/rtslib-fb
+        dest: /root/rtslib-fb
+
+  - name: Install rtslib
+    command: "python setup.py install chdir=/root/rtslib-fb"
+
+  - name: Clone targetcli-fb repo
+    git:
+        repo: https://github.com/open-iscsi/targetcli-fb
+        dest: /root/targetcli-fb
+
+  - name: Install targetcli-fb
+    command: "python setup.py install chdir=/root/targetcli-fb"
+
+  - name: Clone tcmu-runner repo
+    git:
+        repo: https://github.com/open-iscsi/tcmu-runner
+        dest: /root/tcmu-runner
+
+  - name: Install tcmu-runner
+    command: 'chdir=/root/tcmu-runner {{ item }}'
+    with_items:
+    -  cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -Dwith-rbd=false -Dwith-qcow=false -DSUPPORT_SYSTEMD=ON -DCMAKE_BUILD_TYPE=Debug
+    -  make install
+
+  - name: Create /etc/target if it does not exist
+    file:
+        path: /etc/target
+        state: directory
+
+  - name: Copy target.service
+    command: 'chdir=/root/rtslib-fb {{ item }}'
+    with_items:
+    -   cp systemd/target.service /usr/lib/systemd/system/
+
+  - name: Clone gluster-block repo
+    git:
+        repo: https://github.com/gluster/gluster-block
+        dest: /root/gluster-block
+
+
+  - name: Install gluster-block
+    command: 'chdir=/root/gluster-block {{ item }}'
+    with_items:
+    -  ./autogen.sh
+    -  ./configure
+    -  make
+    -  make install
+
+  - name: Start gluster-block Daemon
+    service: name=gluster-blockd state=started
+
+# Setup packages for gluster-block on client
+- hosts: gluster_nodes[5]
   tasks:
   - name: Install dependency packages
     yum: name={{ item }} state=installed
     with_items:
-    - python-pip
-    - libxml2-devel
-    - libxslt-devel
-    - gcc
-    - python-devel
-    - fuse
-    - fuse-libs
+    - iscsi-initiator-utils
+    - device-mapper-multipath
 
-  - name: Setup the repo
-    yum_repository:
-      name: gluster_nightly
-      description: The nightly repo for Gluster
-      #baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
-      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
-      gpgcheck: no
-      repo_gpgcheck: no
+  - name: Start iscsi Daemon
+    service: name=iscsid state=started
 
-  - name: Install gluster
-    yum: name={{ item }} state=installed
-    with_items:
-    - glusterfs-fuse
+  - name: set multipath
+    command: "modprobe dm_multipath"
 
-  - name: Install python-docx
-    pip: name=python-docx state=present
+  - name: Set multipath
+    command:  "mpathconf --enable"
 
+  - name: append the multipath.conf file
+    blockinfile:
+        dest: /etc/multipath.conf
+        block: |
+            # LIO iSCSI
+            devices {
+                device {
+                    vendor "LIO-ORG"
+                    user_friendly_names "yes" # names like mpatha
+                    path_grouping_policy "failover" # one path per group
+                    path_selector "round-robin 0"
+                    failback immediate
+                    path_checker "tur"
+                    prio "const"
+                    no_path_retry 120
+                    rr_weight "uniform"
+                }
+            }
+        backup: yes
+
+  - name: Restart multipath daemon
+    service: name=multipathd state=restarted
+
+#peer probe all nodes
 - hosts: gluster_nodes[1]
   tasks:
   - name: Peer probe all nodes
     command: "gluster peer probe {{hostvars[item]['ansible_eth0']['ipv4']['address']}}"
-    with_items: "{{groups['gluster_nodes'][2:7]}}"
-
-  - name: Install dependency packages
-    yum: name={{ item }} state=installed
-    with_items:
-    - ctdb
-    - samba
-    - samba-vfs-glusterfs
-    - samba-client
-
-  - name: Start smb
-    service: name=smb state=started
-
-  - name: Setup SELinux for Samba
-    seboolean: name=samba_load_libgfapi state=yes persistent=yes
+    with_items: "{{groups['gluster_nodes'][2:4]}}"
 
   - name: Setup SELinux in permissive mode
     selinux: policy=targeted state=enforcing
 
-  - name: Setup Samba credentials
-    shell: (echo "foobar"; echo "foobar") | smbpasswd -a root
-  - name: Setup Samba configuration
-    blockinfile:
-      dest: /etc/samba/smb.conf
-      insertafter: '\[global\]'
-      content: |
-          kernel share modes = no
-          kernel oplocks = no
-          map archive = no
-          map hidden = no
-          map read only = no
-          map system = no
-          store dos attributes = yes
-    tags: smb
 
+# Set up glusto packages on the host node
 - hosts: gluster_nodes[0]
   tasks:
   - name: Copy ssh key
@@ -298,22 +331,14 @@
     with_items:
     - git
     - python-pip
-    - gcc
-    - python-devel
-
-  - name: Set glusto version
-    set_fact:
-      GERRIT_REFSPEC: "{{ lookup('env', 'GERRIT_REFSPEC') }}"
 
   - name: Install Glusto
     pip: name=' git+git://github.com/loadtheaccumulator/glusto.git' editable=false
 
-  - name: Clone the glusto-tests repo - {{ GERRIT_REFSPEC}}
+  - name: Clone the glusto-tests repo
     git:
         repo: git://review.gluster.org/glusto-tests.git
         dest: /root/glusto-tests
-        refspec: "{{GERRIT_REFSPEC}}"
-        version: FETCH_HEAD
 
   - name: Install glustolibs
     command: "python setup.py develop chdir=/root/glusto-tests/{{item}}"
@@ -322,5 +347,10 @@
     - glustolibs-io
     - glustolibs-misc
 
+  - name: Clone gluster-block repo
+    git:
+        repo: https://github.com/gluster/gluster-block
+        dest: /root/gluster-block
+
   - name: Create the config file
-    template: src=templates/gluster_tests_config.yml.j2 dest=/root/gluster_tests_config.yml
+    template: src="{{ lookup('env', 'GLUSTO_WORKSPACE') }}/scripts/gluster-block/gluster_block_glusto_tests_config.yml.j2" dest=/root/gluster_tests_config.yml

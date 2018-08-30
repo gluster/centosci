@@ -31,24 +31,6 @@
         - project: gluster_build-rpms
           block: false
           predefined-parameters:
-            GERRIT_BRANCH=release-3.10
-
-            CENTOS_VERSION=7
-
-            CENTOS_ARCH=x86_64
-    - trigger-builds:
-        - project: gluster_build-rpms
-          block: false
-          predefined-parameters:
-            GERRIT_BRANCH=release-3.10
-
-            CENTOS_VERSION=6
-
-            CENTOS_ARCH=x86_64
-    - trigger-builds:
-        - project: gluster_build-rpms
-          block: false
-          predefined-parameters:
             GERRIT_BRANCH=release-3.12
 
             CENTOS_VERSION=7
@@ -67,7 +49,16 @@
         - project: gluster_build-rpms
           block: false
           predefined-parameters:
-            GERRIT_BRANCH=release-4.0
+            GERRIT_BRANCH=release-4.1
+
+            CENTOS_VERSION=6
+
+            CENTOS_ARCH=x86_64
+    - trigger-builds:
+        - project: gluster_build-rpms
+          block: false
+          predefined-parameters:
+            GERRIT_BRANCH=release-4.1
 
             CENTOS_VERSION=7
 
