@@ -1,0 +1,44 @@
+- job:
+    name: gluster_csi-driver-smoke
+    node: gluster
+    description: Smoke test for gluster-csi-driver
+    project-type: freestyle
+    concurrent: true
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+    properties:
+    - github:
+        url: https://github.com/gluster/gluster-csi-driver/
+
+    triggers:
+    - github-pull-request:
+        admin-list:
+        - humblec
+        - Madhu-1
+        white-list:
+        - humblec
+        - Madhu-1
+        cron: H/5 * * * *
+        status-context: centos-ci
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/csi-driver-smoke/run-test.sh "ghprbPullId=${ghprbPullId}"
+
+    publishers:
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
+
+    wrappers:
+    - ansicolor:
+        colormap: xterm
+    - timestamps
