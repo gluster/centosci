@@ -50,6 +50,7 @@
         permit-all: false
         trigger-phrase: null
         white-list-target-branches: []
+        cancel-builds-on-update: true
 
 
     wrappers:
