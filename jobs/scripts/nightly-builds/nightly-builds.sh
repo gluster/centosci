@@ -66,8 +66,9 @@ SRPM=$(rpmbuild --define 'dist .autobuild' --define "_srcrpmdir ${PWD}" \
 
 MOCK_RPM_OPTS=''
 case "${CENTOS_VERSION}/${GIT_VERSION}" in
-    6/4*)
+    6/4*|6/5*)
         # CentOS-6 does not support server builds from Gluster 4.0 onwards
+	# TODO: once glusterfs-3.x is obsolete, always set this for CentOS-6
         MOCK_RPM_OPTS='--without=server'
         ;;
     *)
