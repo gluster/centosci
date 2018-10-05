@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# setting up virtual environment
 virtualenv --system-site-packaes env
 source env
 
