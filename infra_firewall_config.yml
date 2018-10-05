@@ -1,5 +1,5 @@
 - job:
-    name: gluster-ansible-infra/firewall_config
+    name: gluster-ansible-infra
     node: gluster
     description: Run the test against a bare docker container and check if role
       firewall_config is working fine.
@@ -12,16 +12,16 @@
 
     properties:
     - github:
-        url: https://github.com/gluster/gluster-ansible-infra/tree/master/roles/firewall_config
+        url: https://github.com/gluster/gluster-ansible-infra
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/gluster-ansible-infra/infra_firewall_config.sh
+    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/gluster-ansible-infra/gluster-ansible-infra.sh
 
     publishers:
     - post-tasks:
         - matches:
-            - log-text: Firewall configured
+            - log-text: Build started
           script:
             !include-raw: scripts/common/return-node.sh
 
