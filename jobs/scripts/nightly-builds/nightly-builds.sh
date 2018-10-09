@@ -10,7 +10,7 @@ artifact()
 set -e
 
 # install basic dependencies for building the tarball and srpm
-yum -y install git autoconf automake gcc libtool bison flex make rpm-build mock createrepo_c
+yum -y install git autoconf automake gcc libtool bison flex make rpm-build mock createrepo_c centos-packager
 # gluster repositories contain additional -devel packages
 yum -y install centos-release-storage-common centos-release-gluster
 yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel libuuid-devel
@@ -26,11 +26,14 @@ if [ ${GERRIT_BRANCH} = 'master' ]; then
     GIT_HASH="$(git log -1 --format=%h)"
     GIT_DATE="$(git log -1 --format=format:%cd --date=short | sed 's/-//g')"
     VERSION="${GIT_DATE}.${GIT_HASH}"
+    # there is no cbs-tag storage?-gluster-master-el?-build, use latest tag
+    CBS_TAG_VERSION='7'
 else
     GIT_VERSION="$(sed 's/.*-//' <<< ${GERRIT_BRANCH})"
     GIT_HASH="$(git log -1 --format=%h)"
     GIT_DATE="$(git log -1 --format=format:%cd --date=short | sed 's/-//g')"
     VERSION="${GIT_VERSION}.${GIT_DATE}.${GIT_HASH}"
+    CBS_TAG_VERSION="${GIT_VERSION}"
 fi
 
 # Because this is a shallow clone, there are no tags in the git repository. It
@@ -77,11 +80,17 @@ case "${CENTOS_VERSION}/${GIT_VERSION}" in
         ;;
 esac
 
+# fetch the mock buildroot configuration from the CBS
+CBS_TAG="storage${CENTOS_VERSION}-gluster-${CBS_TAG_VERSION}-el${CENTOS_VERSION}-build"
+# the MOCK_ROOT should match config_opts['root'] from the mock-config
+MOCK_ROOT="${CBS_TAG}-repo_latest"
+koji -p cbs mock-config --latest --arch="${CENTOS_ARCH}" --tag="${CBS_TAG}" > /etc/mock/"${MOCK_ROOT}".cfg
+
 # do the actual RPM build in mock
 # TODO: use a CentOS Storage SIG buildroot
 RESULTDIR=/srv/gluster/nightly/${GERRIT_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
 /usr/bin/mock \
-    --root epel-${CENTOS_VERSION}-${CENTOS_ARCH} \
+    --root "${MOCK_ROOT}" \
     ${MOCK_RPM_OPTS} \
     --resultdir ${RESULTDIR} \
     --rebuild ${SRPM}
