@@ -9,4 +9,4 @@ if [ $? -ne 0 ]
 then
     sudo yum install libselinux-python
 
-/bin/bash centosci/scripts/gluster-ansible-infra/tests/run-centos-ci.sh
+/bin/bash gluster-ansible-infra/tests 
