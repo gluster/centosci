@@ -18,7 +18,7 @@
 
 
     builders:
-    - shell: - shell: !include-raw scripts/common/jenkins-job.py
+    - shell: !include-raw scripts/common/jenkins-job.py
 
     parameters:
     - string:
