@@ -1,2 +1,3 @@
 *.retry
 jenkins_jobs.ini
+jenkins.ini
