@@ -4,10 +4,13 @@ source env
 # if anything fails, we'll abort
 set -e
 
-# install a Gluster server
-yum -y install centos-release-gluster yum-utils
+set -x
+
+# Strangely, userspace-rcu-devel comes from EPEL. We might as well install pip
+# from EPEL.
+yum -y install epel-release yum-utils
 yum-config-manager --add-repo=http://artifacts.ci.centos.org/gluster/nightly/master.repo
-yum -y install glusterfs-server glusterfs-cli
+yum -y install glusterfs-server glusterfs-cli glusterfs-api
 systemctl start glusterd
 
 # create bricks
@@ -25,13 +28,11 @@ gluster --mode=script volume create test replica 2 ${HOSTNAME}:/bricks/b{1..4}/d
 gluster --mode=script volume start test
 
 # basic dependencies for the tests
-yum -y install git
-yum -y install /usr/bin/easy_install
-easy_install pip
+yum -y install git python-pip python36
 pip install --upgrade pip tox
 
 git clone git://review.gluster.org/libgfapi-python
 cd libgfapi-python/
 
 # run tests
-tox -e pep8,py27,functest
+tox -e pep8,py27,py36,functest27,functest36
