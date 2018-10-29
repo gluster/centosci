@@ -27,7 +27,7 @@
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/libgfapi-python/libgfapi-python.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/libgfapi-python/libgfapi-python.sh
 
     publishers:
     - post-tasks:

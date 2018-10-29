@@ -14,7 +14,7 @@
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
     - shell: !include-raw: scripts/common/rsync.sh
-    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/nightly-builds/nightly-builds.sh "GERRIT_BRANCH=$GERRIT_BRANCH CENTOS_VERSION=$CENTOS_VERSION CENTOS_ARCH=$CENTOS_ARCH"
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-builds/nightly-builds.sh "GERRIT_BRANCH=$GERRIT_BRANCH CENTOS_VERSION=$CENTOS_VERSION CENTOS_ARCH=$CENTOS_ARCH"
 
     parameters:
     - choice:
