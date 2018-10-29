@@ -14,7 +14,7 @@
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/glusterd2/run-test.sh "ghprbPullId=${ghprbPullId}"
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/glusterd2/run-test.sh "ghprbPullId=${ghprbPullId}"
 
 
     parameters:
