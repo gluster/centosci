@@ -17,7 +17,7 @@
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
     - shell: !include-raw: scripts/common/rsync.sh
-    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/gd2-nightly/build.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gd2-nightly/build.sh
 
     properties:
     - build-discarder:

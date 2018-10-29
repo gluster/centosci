@@ -30,7 +30,7 @@
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/kubernetes/gluster-kubernetes.sh "ghprbPullId=${ghprbPullId}"
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/kubernetes/gluster-kubernetes.sh "ghprbPullId=${ghprbPullId}"
 
     publishers:
     - post-tasks:

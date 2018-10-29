@@ -17,8 +17,8 @@
 
     builders:
       - shell: !include-raw: scripts/common/get-node.sh
-      - shell: scripts/common/bootstrap.sh
-          $WORKSPACE/scripts/gluster-ansible-infra/gluster-ansible-infra.sh
+      - shell: jobs/scripts/common/bootstrap.sh
+          $WORKSPACE/jobs/scripts/gluster-ansible-infra/gluster-ansible-infra.sh
 
     publishers:
       - post-tasks:

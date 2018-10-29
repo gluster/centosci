@@ -28,7 +28,7 @@
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    - shell: scripts/common/bootstrap.sh $WORKSPACE/scripts/csi-driver-smoke/run-test.sh "ghprbPullId=${ghprbPullId}"
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/csi-driver-smoke/run-test.sh "ghprbPullId=${ghprbPullId}"
 
     publishers:
     - post-tasks:
