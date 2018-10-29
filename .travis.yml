@@ -1,0 +1,12 @@
+language: python
+python:
+- '3.6'
+script: tests/verify-yaml.sh
+deploy:
+  - provider: script
+    script: bash tests/deploy-centos-ci.sh
+    on:
+      branch: master
+env:
+  global:
+    secure: I5Dlju6i7NRNH5aQoTV75Pf4yRpppPFzrhdHGkphVAILd6kB8lopLmcBEEZ64cAmIlhD6XJqSt/wn+c9krEQvRJEreOVjcYYKIeA+cblnk0piHoM5HoLpTF8Xv6I2ewNKesmBSuxY3i78Qov5IqFiD5LG0WysbIW9Cuyt0CPNePtLiezK1HmmLZqJjOU9SNLxEmp1/t7XDPe8SDLtocR1h77nd8/v2DJQAneyR3aN0mBjMw1z7BtuWj1kQUb1jPT741JCgye/0LW1QfFr6pSf7gAfBfCBafxjNlddtgNfdBPONbrPyGANa5HeAypFb6AL4/lBmNJs0jZlXe5k7tT7e/a28KlkL5d0rPc4HIZ2zjg5CzHGHuH09pwQR6lSLK+HNIUNlKN6F7Wgkq7RSAOwSvA0F5aRhrhqr3JMLj0hk8K5U8ucXpxOdxCVPboqNiFlL4riKXghhwWinWz0iO6YScOo/N6xD5h4WrH4ZpYziUUbyIMvVbHu/y71tUxxSXZIBGGRNdR1B2u2a1W8pvvyqd/oEogPQ+UUUdYo9Belox8t6QlJmfhyzUVn6y8c4y4pCBNARWm/pP3G6nW5EFS6hk2VJq5PaWxm4HuB8YhCuEnPHvl22y9JtJNpArE5gtOb6TiS9TZc1biw8BT0JpBPh/zFDJCcgOgjLNBqVLQPJk=
