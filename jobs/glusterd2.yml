@@ -33,6 +33,7 @@
     properties:
     - github:
         url: https://github.com/gluster/glusterd2/
+        display-name: centos-ci
     - build-discarder:
         days-to-keep: 7
         artifact-days-to-keep: 7
