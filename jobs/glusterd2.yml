@@ -33,6 +33,7 @@
     properties:
     - github:
         url: https://github.com/gluster/glusterd2/
+        display-name: centos-ci
     - build-discarder:
         days-to-keep: 7
         artifact-days-to-keep: 7
@@ -44,6 +45,7 @@
         - aravindavk
         - kshlm
         - prashanthpai
+        - Madhu-1
         allow-whitelist-orgs-as-admins: false
         auth-id: a9df0596-2fe4-4e12-a8a5-6856d007bfbc
         auto-close-on-fail: false
