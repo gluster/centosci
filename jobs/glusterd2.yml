@@ -59,6 +59,7 @@
         trigger-phrase: null
         white-list-target-branches: []
         cancel-builds-on-update: true
+        status-context: centos-ci
 
 
     publishers:
