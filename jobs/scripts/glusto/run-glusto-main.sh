@@ -25,7 +25,7 @@ MAX=3
 RETRY=0
 while [ $RETRY -lt $MAX ];
 do
-    ANSIBLE_HOST_KEY_CHECKING=False "$HOME/env/bin/ansible-playbook" -i hosts scripts/glusto/setup-glusto.yml
+    ANSIBLE_HOST_KEY_CHECKING=False "$HOME/env/bin/ansible-playbook" -i hosts jobs/scripts/glusto/setup-glusto.yml
     RETURN_CODE=$?
     if [ $RETURN_CODE -eq 0 ]; then
         break
@@ -35,13 +35,13 @@ done
 
 # run the test command from master
 if [ -z "$GLUSTO_PATCH" ]; then
-    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto.sh "root@${host}:run-glusto.sh"
+    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no jobs/scripts/glusto/run-glusto.sh "root@${host}:run-glusto.sh"
     ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" EXIT_ON_FAIL="$EXIT_ON_FAIL" ./run-glusto.sh -m "$GLUSTO_MODULE"
     JENKINS_STATUS=$?
   else
-    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no scripts/glusto/run-glusto-patch.sh "root@${host}:run-glusto-patch.sh"
+    scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no jobs/scripts/glusto/run-glusto-patch.sh "root@${host}:run-glusto-patch.sh"
     ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" EXIT_ON_FAIL=True ./run-glusto-patch.sh -p "$GLUSTO_PATCH"
     JENKINS_STATUS=$?
 fi
-source $GLUSTO_WORKSPACE/scripts/glusto/get-glusto-logs.sh
+source $GLUSTO_WORKSPACE/jobs/scripts/glusto/get-glusto-logs.sh
 exit $JENKINS_STATUS
