@@ -5,6 +5,9 @@
     description: Run the test against a bare docker container and check if role
       firewall_config is working fine.
 
+    triggers:
+    - timed: '@midnight'
+
     scm:
       - git:
           url: https://github.com/gluster/centosci.git
