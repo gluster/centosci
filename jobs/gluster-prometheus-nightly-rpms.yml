@@ -1,0 +1,31 @@
+- job:
+    name: gluster_prometheus-nightly-rpms
+    node: gluster
+    description: Build gluster-prometheus-exporter nightly RPMs.
+    project-type: freestyle
+    concurrent: true
+
+    triggers:
+    - timed: 'H 0 * * *'
+
+    scm:
+      - git:
+          url: https://github.com/gluster/centosci.git
+          branches:
+          - origin/master
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: !include-raw: scripts/common/rsync.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-prometheus-nightly/build.sh
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+    publishers:
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
