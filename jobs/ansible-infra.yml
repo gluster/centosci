@@ -5,6 +5,9 @@
     description: Run the test against a bare docker container and check if role
       firewall_config is working fine.
 
+    triggers:
+    - timed: "H 0 * * *"
+
     scm:
       - git:
           url: https://github.com/gluster/centosci.git
@@ -26,3 +29,6 @@
               - log-text: Build started
             script:
               !include-raw: scripts/common/return-node.sh
+      - email:
+          recipients: ci-results@gluster.org
+          send-to-individuals: false

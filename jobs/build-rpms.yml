@@ -49,7 +49,7 @@
         body: $DEFAULT_CONTENT
         content-type: text
         presend-script: $DEFAULT_PRESEND_SCRIPT
-        recipients: $DEFAULT_RECIPIENTS
+        recipients: ci-results@gluster.org
         reply-to: $DEFAULT_REPLYTO
         subject: $DEFAULT_SUBJECT ($GERRIT_BRANCH on CentOS-$CENTOS_VERSION/$CENTOS_ARCH)
     - post-tasks:
