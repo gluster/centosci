@@ -6,7 +6,7 @@
     concurrent: true
 
     triggers:
-    - timed: '@midnight'
+    - timed: "H 0 * * *"
 
     builders:
     - trigger-builds:
