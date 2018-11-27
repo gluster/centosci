@@ -61,6 +61,7 @@ curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_x86_64.rpm'
 curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_SHA256SUMS'
 curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_SHA256SUMS.sig'
 gpg --verify vagrant_2.2.1_SHA256SUMS.sig vagrant_2.2.1_SHA256SUMS
+yum -y install perl-Digest-SHA # For /usr/bin/shasum
 shasum -a 256 -c vagrant_2.2.1_SHA256SUMS
 yum -y localinstall vagrant_2.2.1_x86_64.rpm
 
