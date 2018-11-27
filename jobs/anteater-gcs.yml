@@ -1,6 +1,6 @@
 ---
 - job:
-    name: anteater_gcs
+    name: gluster_anteater_gcs
     node: gluster
     description: Setup a GCS environment and run anteater tests against it.
 
