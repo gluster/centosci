@@ -56,7 +56,7 @@ oEIgXTMyCILo34Fa/C6VCm2WBgz9zZO8/rHIiQm1J5zqz0DrDwKBUM9C
 =LYpS
 -----END PGP PUBLIC KEY BLOCK-----"
 echo "$HASHIECORP_GPG_KEY" > hashicorp.asc
-rpm --import hashiecorp.asc
+rpm --import hashicorp.asc
 curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_x86_64.rpm'
 curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_SHA256SUMS'
 curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_SHA256SUMS.sig'
