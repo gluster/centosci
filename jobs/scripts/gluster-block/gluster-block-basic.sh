@@ -25,6 +25,8 @@ install_dependency()
     # gluster repositories contain additional -devel packages
     yum -y install centos-release-gluster
     yum -y install libuuid-devel targetcli glusterfs-api-devel
+    yum -y install libnl3-devel glib2-devel zlib-devel kmod-devel
+    yum -y install json-c-devel
 }
 
 clone_and_build_rpms()
