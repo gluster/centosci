@@ -1,0 +1,31 @@
+- job:
+    name: gluster_block_basic
+    node: gluster
+    description: Build gluster-block
+    project-type: freestyle
+    concurrent: true
+
+    triggers:
+    - timed: 'H 0 * * *'
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+    builders:
+    - shell: !include-raw: jobs/scripts/common/get-node.sh
+    - shell: !include-raw: jobs/scripts/common/rsync.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-block/gluster-block-basic.sh
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+    publishers:
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: jobs/scripts/common/return-node.sh
