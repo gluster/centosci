@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 GIT_BRANCH=${GIT_BRANCH:-master}
 CENTOS_VERSION=${CENTOS_VERSION:-7}
@@ -12,7 +12,7 @@ RSYNC_DIR=gluster/gluster-block-nightly
 artifact()
 {
     [ -e ~/rsync.passwd ] || return 0
-    rsync -av --password-file ~/rsync.passwd "${@}" gluster@artifacts.ci.centos.org::${RSYNC_DIR}/
+    rsync -av --password-file ~/rsync.passwd "${@}" gluster@artifacts.ci.centos.org::${RSYNC_DIR}/${CENTOS_VERSION}/${CENTOS_ARCH}/
 }
 
 
@@ -26,7 +26,7 @@ install_dependency()
     yum -y install centos-release-gluster
     yum -y install libuuid-devel targetcli glusterfs-api-devel
     yum -y install libnl3-devel glib2-devel zlib-devel kmod-devel
-    yum -y install json-c-devel
+    yum -y install json-c-devel help2man rpcbind
 }
 
 clone_and_build_rpms()
@@ -41,7 +41,6 @@ clone_and_build_rpms()
     rpm -i rpmbuild/RPMS/x86_64/tcmu-runner*.rpm
     popd
 
-
     rm -rf gluster-block/
     git clone --depth 2 https://github.com/gluster/gluster-block/
 
@@ -50,7 +49,6 @@ clone_and_build_rpms()
     ./configure
     make rpms
     popd
-
 }
 
 push_rpms_to_repo()
@@ -58,8 +56,8 @@ push_rpms_to_repo()
     TARGET_DIR="/srv/$REPO_DIR"
     mkdir -p $TARGET_DIR/master
 
-    cp -a tcmu-runner/extra/rpmbuild/* $TARGET_DIR/master/
-    cp -a gluster-block/build/rpmbuild/* $TARGET_DIR/master/
+    cp -a tcmu-runner/extra/rpmbuild/RPMS/x86_64/* $TARGET_DIR/master/
+    cp -a gluster-block/build/rpmbuild/RPMS/x86_64/* $TARGET_DIR/master/
 
     pushd "$TARGET_DIR"
     createrepo_c .
