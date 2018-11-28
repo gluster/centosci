@@ -25,7 +25,8 @@ echo "##### Vagrant setup #####"
 # Install vagrant from vagrantup.com rather than SCL as the scripts from GCS
 # repo cannot be modified
 # https://www.hashicorp.com/security.html
-HASHIECORP_GPG_KEY="-----BEGIN PGP PUBLIC KEY BLOCK-----
+VAGRANT_PKG_GPG_FILE="hashiecorp.asc"
+VAGRANT_PKG_GPG_KEY="-----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1
 
 mQENBFMORM0BCADBRyKO1MhCirazOSVwcfTr1xUxjPvfxD3hjUwHtjsOy/bT6p9f
@@ -55,8 +56,9 @@ EK1UbTS4ms0NgZ2Uknqn1WRU1Ki7rE4sTy68iZtWpKQXZEJa0IGnuI2sSINGcXCJ
 oEIgXTMyCILo34Fa/C6VCm2WBgz9zZO8/rHIiQm1J5zqz0DrDwKBUM9C
 =LYpS
 -----END PGP PUBLIC KEY BLOCK-----"
-echo "$HASHIECORP_GPG_KEY" > hashicorp.asc
-rpm --import hashicorp.asc
+echo "$VAGRANT_PKG_GPG_KEY" > "$VAGRANT_PKG_GPG_FILE"
+rpm --import "$VAGRANT_PKG_GPG_FILE"
+gpg --import "$VAGRANT_PKG_GPG_FILE"
 curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_x86_64.rpm'
 curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_SHA256SUMS'
 curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_SHA256SUMS.sig'
