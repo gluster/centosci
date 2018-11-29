@@ -81,7 +81,7 @@ vagrant plugin install vagrant-libvirt
 vagrant plugin list
 
 # Import the vagrant box
-vagrant box add centos/atomic-host
+vagrant box add --provider libvirt --force centos/atomic-host
 
 echo "##### GCS setup #####"
 # Clone the GCS repo
