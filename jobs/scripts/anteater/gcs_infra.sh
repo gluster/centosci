@@ -84,7 +84,7 @@ vagrant plugin list
 vagrant box add --provider libvirt --force centos/atomic-host
 
 echo "##### GCS setup #####"
-yum -y install git
+yum -y install git ansible python-virtualenv
 # Clone the GCS repo
 # kubespray is pulled in as a git submodule, via --recursive
 git clone --recursive https://github.com/gluster/gcs.git
