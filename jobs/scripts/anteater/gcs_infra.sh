@@ -25,8 +25,12 @@ echo "##### Vagrant setup #####"
 # Install vagrant from vagrantup.com rather than SCL as the scripts from GCS
 # repo cannot be modified
 # https://www.hashicorp.com/security.html
-VAGRANT_PKG_GPG_FILE="hashiecorp.asc"
-VAGRANT_PKG_GPG_KEY="-----BEGIN PGP PUBLIC KEY BLOCK-----
+VAGRANT_VERSION="vagrant_2.2.1"
+VAGRANT_PKG_FILE="${VAGRANT_VERSION}_x86_64.rpm"
+VAGRANT_PKG_SHASUM_FILE="${VAGRANT_VERSION}_SHA256SUMS"
+VAGRANT_PKG_SIG_FILE="${VAGRANT_PKG_SHASUM_FILE}.sig"
+VAGRANT_GPG_FILE="hashiecorp.asc"
+VAGRANT_GPG_KEY="-----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: GnuPG v1
 
 mQENBFMORM0BCADBRyKO1MhCirazOSVwcfTr1xUxjPvfxD3hjUwHtjsOy/bT6p9f
@@ -56,16 +60,16 @@ EK1UbTS4ms0NgZ2Uknqn1WRU1Ki7rE4sTy68iZtWpKQXZEJa0IGnuI2sSINGcXCJ
 oEIgXTMyCILo34Fa/C6VCm2WBgz9zZO8/rHIiQm1J5zqz0DrDwKBUM9C
 =LYpS
 -----END PGP PUBLIC KEY BLOCK-----"
-echo "$VAGRANT_PKG_GPG_KEY" > "$VAGRANT_PKG_GPG_FILE"
-rpm --import "$VAGRANT_PKG_GPG_FILE"
-gpg --import "$VAGRANT_PKG_GPG_FILE"
-curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_x86_64.rpm'
-curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_SHA256SUMS'
-curl -Os 'https://releases.hashicorp.com/vagrant/2.2.1/vagrant_2.2.1_SHA256SUMS.sig'
-gpg --verify vagrant_2.2.1_SHA256SUMS.sig vagrant_2.2.1_SHA256SUMS
+echo "$VAGRANT_GPG_KEY" > "$VAGRANT_GPG_FILE"
+rpm --import "$VAGRANT_GPG_FILE"
+gpg --import "$VAGRANT_GPG_FILE"
+curl -Os "https://releases.hashicorp.com/vagrant/2.2.1/${VAGRANT_PKG_FILE}"
+curl -Os "https://releases.hashicorp.com/vagrant/2.2.1/${VAGRANT_PKG_SHASUM_FILE}"
+curl -Os "https://releases.hashicorp.com/vagrant/2.2.1/${VAGRANT_PKG_SIG_FILE}"
+gpg --verify "$VAGRANT_PKG_SIG_FILE" "$VAGRANT_PKG_SHASUM_FILE"
 yum -y install perl-Digest-SHA # For /usr/bin/shasum
-shasum -a 256 -c vagrant_2.2.1_SHA256SUMS
-yum -y localinstall vagrant_2.2.1_x86_64.rpm
+shasum -a 256 -c vagrant_2.2.1_SHA256SUMS | grep -F "${VAGRANT_PKG_FILE}: OK"
+yum -y localinstall "$VAGRANT_PKG_FILE"
 
 echo "##### vagrant-libvirt setup #####"
 # https://github.com/vagrant-libvirt/vagrant-libvirt
