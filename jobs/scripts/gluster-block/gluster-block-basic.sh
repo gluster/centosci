@@ -12,7 +12,7 @@ RSYNC_DIR=gluster/gluster-block-nightly
 artifact()
 {
     [ -e ~/rsync.passwd ] || return 0
-    rsync -av --password-file ~/rsync.passwd "${@}" gluster@artifacts.ci.centos.org::${RSYNC_DIR}/${CENTOS_VERSION}/${CENTOS_ARCH}/
+    rsync -av --password-file ~/rsync.passwd "${@}" gluster@artifacts.ci.centos.org::${RSYNC_DIR}/
 }
 
 
@@ -54,10 +54,11 @@ clone_and_build_rpms()
 push_rpms_to_repo()
 {
     TARGET_DIR="/srv/$REPO_DIR"
-    mkdir -p $TARGET_DIR/master
+    RPMDIR="$TARGET_DIR/master/${CENTOS_VERSION}/${CENTOS_ARCH}"
+    mkdir -p ${RPMDIR}
 
-    cp -a tcmu-runner/extra/rpmbuild/RPMS/x86_64/* $TARGET_DIR/master/
-    cp -a gluster-block/build/rpmbuild/RPMS/x86_64/* $TARGET_DIR/master/
+    cp -a tcmu-runner/extra/rpmbuild/RPMS/x86_64/* ${RPMDIR}
+    cp -a gluster-block/build/rpmbuild/RPMS/x86_64/* ${RPMDIR}
 
     pushd "$TARGET_DIR"
     createrepo_c .
