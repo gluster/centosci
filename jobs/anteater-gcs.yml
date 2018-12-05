@@ -4,6 +4,9 @@
     node: gluster
     description: Setup a GCS environment and run anteater tests against it.
 
+    triggers:
+    - timed: 'H 0 * * *'
+
     scm:
       - git:
           url: https://github.com/gluster/centosci.git
