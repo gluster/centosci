@@ -44,8 +44,9 @@
         admin-list:
         - aravindavk
         - kshlm
-        - prashanthpai
         - Madhu-1
+        org-list:
+        - gluster
         allow-whitelist-orgs-as-admins: false
         auth-id: a9df0596-2fe4-4e12-a8a5-6856d007bfbc
         auto-close-on-fail: false
