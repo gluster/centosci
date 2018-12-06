@@ -45,10 +45,9 @@
         - aravindavk
         - kshlm
         - Madhu-1
-        - nigelbabu
         org-list:
         - gluster
-        allow-whitelist-orgs-as-admins: false
+        allow-whitelist-orgs-as-admins: true
         auth-id: a9df0596-2fe4-4e12-a8a5-6856d007bfbc
         auto-close-on-fail: false
         build-desc-template: null
