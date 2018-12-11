@@ -38,7 +38,11 @@ clone_and_build_rpms()
     pushd tcmu-runner
     cd extra/
     bash make_runnerrpms.sh --without rbd --without qcow --without zbc --without fbo
-    rpm -i rpmbuild/RPMS/x86_64/tcmu-runner*.rpm
+
+    # install tcmu runner RPMs so gluster-block dependency can be satisfied
+    # notice that tcmu-runner now depends on libtcmu too, which gets built
+    # separately
+    rpm -i rpmbuild/RPMS/x86_64/*.rpm
     popd
 
     rm -rf gluster-block/
