@@ -64,7 +64,7 @@ push_rpms_to_repo()
     cp -a tcmu-runner/extra/rpmbuild/RPMS/x86_64/* ${RPMDIR}
     cp -a gluster-block/build/rpmbuild/RPMS/x86_64/* ${RPMDIR}
 
-    pushd "$TARGET_DIR"
+    pushd "${RPMDIR}"
     createrepo_c .
     popd
 
