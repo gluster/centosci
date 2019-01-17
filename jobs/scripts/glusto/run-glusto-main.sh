@@ -10,8 +10,7 @@ host=$(grep ansible_host hosts | head -n 1 | awk '{split($2, a, "="); print a[2]
 set -x
 # Check if this is a patch run
 GLUSTO_WORKSPACE="$WORKSPACE"
-if [ -d "glusto" ]
-then
+if [ -d "glusto" ]; then
   pushd glusto
   GLUSTO_PATCH=$(git diff-tree --no-commit-id --name-only -r HEAD --diff-filter=AMR -- 'tests/*.py' | sed 's#tests/##g' | sed '/__init__.py/d' | paste -s -d" ")
   popd
@@ -25,7 +24,7 @@ MAX=3
 RETRY=0
 while [ $RETRY -lt $MAX ];
 do
-    ANSIBLE_HOST_KEY_CHECKING=False "$HOME/env/bin/ansible-playbook" -i hosts jobs/scripts/glusto/setup-glusto.yml
+    ANSIBLE_HOST_KEY_CHECKING=False "$HOME/env/bin/ansible-playbook" -i hosts jobs/scripts/glusto/setup-glusto.yml -vvvv
     RETURN_CODE=$?
     if [ $RETURN_CODE -eq 0 ]; then
         break
