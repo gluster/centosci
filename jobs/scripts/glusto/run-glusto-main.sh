@@ -19,12 +19,13 @@ if [ -d "glusto" ]; then
   GLUSTO_WORKSPACE="$WORKSPACE"/centosci
 fi
 export GLUSTO_WORKSPACE
+ssh-keygen -b 2048 -t rsa -f $GLUSTO_WORKSPACE/glusto -q -N ""
 # Retry Ansible runs thrice
 MAX=3
 RETRY=0
 while [ $RETRY -lt $MAX ];
 do
-    ANSIBLE_HOST_KEY_CHECKING=False "$HOME/env/bin/ansible-playbook" -i hosts jobs/scripts/glusto/setup-glusto.yml -vvvv
+    ANSIBLE_HOST_KEY_CHECKING=False "$HOME/env/bin/ansible-playbook" -i hosts jobs/scripts/glusto/setup-glusto.yml
     RETURN_CODE=$?
     if [ $RETURN_CODE -eq 0 ]; then
         break
