@@ -19,7 +19,7 @@ if [ -d "glusto" ]; then
   GLUSTO_WORKSPACE="$WORKSPACE"/centosci
 fi
 export GLUSTO_WORKSPACE
-ssh-keygen -b 2048 -t rsa -f $GLUSTO_WORKSPACE/glusto -q -N ""
+#ssh-keygen -b 2048 -t rsa -f $GLUSTO_WORKSPACE/glusto -q -N ""
 # Retry Ansible runs thrice
 MAX=3
 RETRY=0

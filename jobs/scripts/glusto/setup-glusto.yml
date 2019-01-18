@@ -44,7 +44,7 @@
       workspace: "{{ lookup('env', 'GLUSTO_WORKSPACE') }}"
 
   - name: Add entries to authorized_keys
-    authorized_key: user=root key="{{ lookup('file', workspace + '/glusto.pub')}}"
+    authorized_key: user=root key="{{ lookup('file', '/home/gluster/.ssh/glusto.pub')}}"
 
 - hosts: gluster_nodes
   tasks:
@@ -284,7 +284,7 @@
 - hosts: gluster_nodes[0]
   tasks:
   - name: Copy ssh key
-    copy: src="{{ lookup('env', 'GLUSTO_WORKSPACE') }}/glusto" dest=/root/.ssh/id_rsa mode=600
+    copy: src="/home/gluster/.ssh/glusto" dest=/root/.ssh/id_rsa mode=600
 
   - name: Install git and pip
     yum: name="{{item}}" state=present
