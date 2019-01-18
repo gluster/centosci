@@ -2,6 +2,9 @@
 ---
 - hosts: localhost
   tasks:
+  - name: Create a file to test
+    shell: touch $GLUSTO_WORKSPACE/foo
+
   - name: Create an ssh keypair
     shell: ssh-keygen -b 2048 -t rsa -f $GLUSTO_WORKSPACE/glusto -q -N ""
     args:
