@@ -42,6 +42,7 @@
         - obnoxxx
         - phlogistonjohn
         - raghavendra-talur
+        - ansiwen
         cron: H/5 * * * *
         status-context: centos-ci
 
