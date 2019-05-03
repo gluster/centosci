@@ -1,0 +1,47 @@
+- job:
+    name: gluster_block-lcov
+    node: gluster
+    description: Run the lcov tool for gluster-block
+    project-type: freestyle
+    concurrent: true
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        basedir: centosci
+        branches:
+        - origin/master
+        wipe-workspace: false
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+        artifact-days-to-keep: 7
+
+    triggers:
+    - timed: 'H 0 * * *'
+
+    parameters:
+    - string:
+        default: refs/heads/master
+        description: Gerrit ref for Gluster-block. For 12345/6 use 45/12345/6. Two fixed names you can use - stable and master.
+        name: GERRIT_REFSPEC
+    - string:
+        default: master
+        description: 'Name of the branch you want to build from. We usually build from master'
+        name: GERRIT_BRANCH
+
+    builders:
+      - shell: !include-raw: scripts/common/get-node.sh
+      - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-block/lcov.sh
+
+    publishers:
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script: !include-raw: scripts/common/return-node.sh  
+
+    wrappers:
+    - timestamps
+    - workspace-cleanup
