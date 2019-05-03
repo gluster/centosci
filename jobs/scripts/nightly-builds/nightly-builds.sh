@@ -17,7 +17,7 @@ yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-d
 
 # clone the repository, github is faster than our Gerrit
 #git clone https://review.gluster.org/glusterfs
-git clone https://github.com/gluster/glusterfs
+git clone --depth 1 https://github.com/gluster/glusterfs
 cd glusterfs/
 
 # switch to the branch we want to build
