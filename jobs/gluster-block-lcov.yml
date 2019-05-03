@@ -8,7 +8,6 @@
     scm:
     - git:
         url: https://github.com/gluster/centosci.git
-        basedir: centosci
         branches:
         - origin/master
         wipe-workspace: false
@@ -40,7 +39,7 @@
         - matches:
             # "Building remotely" should always be in the build console output
             - log-text: Building remotely
-          script: !include-raw: scripts/common/return-node.sh  
+          script: !include-raw: scripts/common/return-node.sh
 
     wrappers:
     - timestamps

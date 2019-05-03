@@ -2,10 +2,15 @@
 
 set -e
 
-yum install -y git autoconf automake gcc libtool make file rpcgen glusterfs-api-devel libuuid-devel json-c-devel libtirpc-devel lcov
+yum install -y git autoconf automake gcc libtool make file glusterfs-api-devel libuuid-devel json-c-devel libtirpc-devel glibc-common
 
 # install runtime dependencies
 yum install -y glusterfs-server targetcli tcmu-runner
+
+# install lcov
+http://download-ib01.fedoraproject.org/pub/epel/7/x86_64/
+rpm -Uvh epel-release*rpm
+yum install lcov
 
 # get the gluster-block source code
 rm -rf gluster-block/
