@@ -2,7 +2,7 @@
 
 set -e
 
-yum install -y git autoconf automake gcc libtool make file rpcgen glusterfs-api-devel libuuid-devel json-c-devel libtirpc-devel
+yum install -y git autoconf automake gcc libtool make file rpcgen glusterfs-api-devel libuuid-devel json-c-devel libtirpc-devel lcov
 
 # install runtime dependencies
 yum install -y glusterfs-server targetcli tcmu-runner
