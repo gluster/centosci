@@ -4,12 +4,12 @@ set -e
 
 yum install -y git autoconf automake gcc libtool make file glusterfs-api-devel libuuid-devel json-c-devel libtirpc-devel glibc-common
 
-# install runtime dependencies
-yum install -y glusterfs-server targetcli tcmu-runner
-
 # get epel and install lcov
 yum install -y epel-release
 yum install -y lcov
+
+# install runtime dependencies
+yum install -y glusterfs-server targetcli tcmu-runner
 
 # get the gluster-block source code
 rm -rf gluster-block/
