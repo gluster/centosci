@@ -2,7 +2,7 @@
 
 set -e
 
-yum install -y git autoconf automake gcc libtool make file glusterfs-api-devel libuuid-devel json-c-devel libtirpc-devel glibc-common
+yum install -y git autoconf automake gcc libtool make file glusterfs-api-devel libuuid-devel json-c-devel libtirpc-devel glibc-common python-setuptools
 
 # get epel and install lcov
 yum install -y epel-release centos-release-gluster
@@ -17,6 +17,9 @@ cd ..
 git clone https://github.com/open-iscsi/rtslib-fb
 cd rtslib-fb
 ./setup.py install
+cp systemd/target.service /usr/lib/systemd/system/target.service
+systemctl daemon-reload
+systemctl restart gluster-blockd
 cd ..
 
 git clone https://github.com/open-iscsi/configshell-fb
