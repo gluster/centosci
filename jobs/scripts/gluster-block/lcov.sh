@@ -18,8 +18,6 @@ git clone https://github.com/open-iscsi/rtslib-fb
 cd rtslib-fb
 ./setup.py install
 cp systemd/target.service /usr/lib/systemd/system/target.service
-systemctl daemon-reload
-systemctl restart gluster-blockd
 cd ..
 
 git clone https://github.com/open-iscsi/configshell-fb
