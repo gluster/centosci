@@ -31,10 +31,11 @@ else
     VERSION="${GIT_VERSION}.$(date +%Y%m%d).${GIT_HASH}"
 fi
 
-# overload some variables to match the auto-generated version
-if [ -x build-aux/pkg-version ]; then
-    VERSION="$(build-aux/pkg-version --version)"
-fi
+# Because this is a shallow clone, there are no tags in the git repository. It
+# is not possible to use ./build-aux/pkg-version to get a matching version of a
+# release. Create a VERSION file so that ./build-aux/pkg-version will not
+# return any errors.
+echo "${VERSION}" > VERSION
 
 # unique tag to use in git
 TAG="${VERSION}-$(date +%Y%m%d).${GIT_HASH}"
