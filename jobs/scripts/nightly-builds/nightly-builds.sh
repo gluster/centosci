@@ -35,7 +35,7 @@ fi
 # is not possible to use ./build-aux/pkg-version to get a matching version of a
 # release. Create a VERSION file so that ./build-aux/pkg-version will not
 # return any errors.
-echo "${VERSION}" > VERSION
+echo "v${VERSION}" > VERSION
 
 # unique tag to use in git
 TAG="${VERSION}-$(date +%Y%m%d).${GIT_HASH}"
