@@ -40,7 +40,7 @@ nproc=$(getconf _NPROCESSORS_ONLN)
 # compile and istall from source code with lcov
 pushd gluster-block
 ./autogen.sh
-./configure CFLAGS="-g3 -O0 -lgcov --coverage -fprofile-arcs -ftest-coverage"
+./configure --enable-tirpc=no CFLAGS="-g3 -O0 -lgcov --coverage -fprofile-arcs -ftest-coverage"
 make install -j ${nproc}
 
 echo "Initializing the line coverage"
