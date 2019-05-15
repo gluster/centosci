@@ -62,7 +62,7 @@ sed -i.bak '/stdout/d' coverage/gluster-block-lcov.info
 
 #Generating the html page for code coverage details using genhtml
 genhtml -o coverage/ coverage/gluster-block-lcov.info
-echo "The HTML report is generated as index.html file"
+echo "The HTML report is archived as index.html file"
 popd
 
 if [ $TEST_STATUS -ne 0 ];

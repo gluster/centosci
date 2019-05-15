@@ -35,12 +35,12 @@
       - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-block/lcov.sh
 
     publishers:
-    - html-publisher:
-        name: "Line Coverage Report"
-        dir: "coverage/"
-        files: "index.html"
-        keep-all: true
-        link-to-last-build: true
+    - archive:
+        allow-empty: true
+        artifacts: "coverage/index.html"
+        default-excludes: true
+        fingerprint: false
+        only-if-success: false
     - post-tasks:
         - matches:
             # "Building remotely" should always be in the build console output
