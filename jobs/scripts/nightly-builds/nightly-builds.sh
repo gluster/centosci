@@ -24,12 +24,12 @@ cd glusterfs/
 if [ ${GERRIT_BRANCH} = 'master' ]; then
     GIT_VERSION=''
     GIT_HASH="$(git log -1 --format=%h)"
-    GIT_DATE="$(git log -1 --format=format:%cd --date=format:%Y%m%d)"
+    GIT_DATE="$(git log -1 --format=format:%cd --date=short | sed 's/-//g')"
     VERSION="${GIT_DATE}.${GIT_HASH}"
 else
     GIT_VERSION="$(sed 's/.*-//' <<< ${GERRIT_BRANCH})"
     GIT_HASH="$(git log -1 --format=%h)"
-    GIT_DATE="$(git log -1 --format=format:%cd --date=format:%Y%m%d)"
+    GIT_DATE="$(git log -1 --format=format:%cd --date=short | sed 's/-//g')"
     VERSION="${GIT_VERSION}.${GIT_DATE}.${GIT_HASH}"
 fi
 
