@@ -50,7 +50,7 @@ clone_and_build_rpms()
 
     pushd gluster-block
     ./autogen.sh
-    ./configure
+    ./configure --enable-tirpc=no
     make rpms
     popd
 }

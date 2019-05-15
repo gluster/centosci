@@ -17,27 +17,27 @@ yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-d
 
 # clone the repository, github is faster than our Gerrit
 #git clone https://review.gluster.org/glusterfs
-git clone --depth 1 https://github.com/gluster/glusterfs
+git clone --depth 1 --branch ${GERRIT_BRANCH} https://github.com/gluster/glusterfs
 cd glusterfs/
 
-# switch to the branch we want to build
-git checkout ${GERRIT_BRANCH}
-
-# generate a version based on branch.date.last-commit-hash
+# generate a version based on branch.last-commit-date.last-commit-hash
 if [ ${GERRIT_BRANCH} = 'master' ]; then
     GIT_VERSION=''
     GIT_HASH="$(git log -1 --format=%h)"
-    VERSION="$(date +%Y%m%d).${GIT_HASH}"
+    GIT_DATE="$(git log -1 --format=format:%cd --date=format:%Y%m%d)"
+    VERSION="${GIT_DATE}.${GIT_HASH}"
 else
     GIT_VERSION="$(sed 's/.*-//' <<< ${GERRIT_BRANCH})"
     GIT_HASH="$(git log -1 --format=%h)"
-    VERSION="${GIT_VERSION}.$(date +%Y%m%d).${GIT_HASH}"
+    GIT_DATE="$(git log -1 --format=format:%cd --date=format:%Y%m%d)"
+    VERSION="${GIT_VERSION}.${GIT_DATE}.${GIT_HASH}"
 fi
 
-# overload some variables to match the auto-generated version
-if [ -x build-aux/pkg-version ]; then
-    VERSION="$(build-aux/pkg-version --version)"
-fi
+# Because this is a shallow clone, there are no tags in the git repository. It
+# is not possible to use ./build-aux/pkg-version to get a matching version of a
+# release. Create a VERSION file so that ./build-aux/pkg-version will not
+# return any errors.
+echo "v${VERSION}" > VERSION
 
 # unique tag to use in git
 TAG="${VERSION}-$(date +%Y%m%d).${GIT_HASH}"
