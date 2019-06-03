@@ -1,0 +1,39 @@
+- job:
+    name: gluster_block-clang
+    node: gluster
+    description: Run the clang scan-build on gluster block code
+    project-type: freestyle
+    concurrent: true
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+        wipe-workspace: false
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+        artifact-days-to-keep: 7
+
+    builders:
+      - shell: !include-raw: scripts/common/get-node.sh
+      - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-block/clang-scan.sh
+
+    parameters:
+    - string:
+        default: refs/heads/master
+        description: 'For review 12345 and patch set 6, this will be refs/changes/45/12345/6. Default: Tip of master'
+        name: GERRIT_REFSPEC
+    - string:
+        default: master
+        description: 'Name of the branch you want to build from. We usually build from master'
+        name: GERRIT_BRANCH
+    - string:
+        default: fedora-29-x86_64
+        description: 'Name of the mock chroot used to build'
+        name: MOCK_CHROOT
+
+    wrappers:
+    - timestamps
