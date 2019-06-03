@@ -17,6 +17,6 @@ $MOCK --chroot "git clone https://github.com/open-iscsi/tcmu-runner && cd tcmu-r
 
 $MOCK --chroot "git clone --depth 2 https://github.com/gluster/gluster-block/ && ./gluster-block/autogen.sh && ./gluster-block/configure CC=clang --enable-gnfs --enable-debug"
 
-$MOCK --chroot "scan-build -o clangScanBuildReports -disable-checker deadcode.DeadStores -v -v --use-cc clang --use-analyzer=/usr/bin/clang make"
+$MOCK --chroot "scan-build -V -disable-checker deadcode.DeadStores -v -v --use-cc clang --use-analyzer=/usr/bin/clang make"
 
 $MOCK --clean

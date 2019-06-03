@@ -21,11 +21,6 @@
       - shell: !include-raw: scripts/common/get-node.sh
       - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-block/clang-scan.sh
 
-    publishers:
-    - scan-build:
-        mark-unstable: true
-        threshold: 140
-
     parameters:
     - string:
         default: refs/heads/master
