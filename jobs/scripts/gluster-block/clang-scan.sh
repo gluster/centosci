@@ -1,8 +1,9 @@
 #!/bin/bash
-MOCK="sudo mock -r $MOCK_CHROOT --config-opts=dnf_warning=False"
 
 # install mock on the node
 yum intsall -y mock
+MOCK="sudo mock -r $MOCK_CHROOT --config-opts=dnf_warning=False"
+
 $MOCK --init
 # get epel and install packages
 $MOCK --install epel-release
