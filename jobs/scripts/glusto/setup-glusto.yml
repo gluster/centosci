@@ -295,12 +295,15 @@
     copy: src="/home/gluster/.ssh/glusto" dest=/root/.ssh/id_rsa mode=600
 
   - name: Install git and pip
-    yum: name="{{item}}" state=present
+    yum: name="{{item}}" state=latest
     with_items:
     - git
     - python-pip
     - gcc
     - python-devel
+
+  - name: Upgrading pip
+    command: "pip install --upgrade pip"
 
   - name: Set glusto version
     set_fact:
