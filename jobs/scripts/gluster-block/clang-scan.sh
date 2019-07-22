@@ -35,7 +35,5 @@ make install
 rm -rf gluster-block/
 git clone --depth 2 https://github.com/gluster/gluster-block/
 pushd gluster-block
-./autogen.sh
-./configure --enable-tirpc=no
 
 scan-build -V -disable-checker deadcode.DeadStores -v -v --use-cc clang --use-analyzer=/usr/bin/clang make
