@@ -22,7 +22,7 @@
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    - shell: scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ~/cov-analysis "root@$(cat $WORKSPACE/hosts):/opt
+    - shell: scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ~/cov-analysis "root@$(cat $WORKSPACE/hosts):/opt"
     - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-block/coverity.sh
 
     wrappers:
