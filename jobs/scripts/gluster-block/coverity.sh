@@ -26,7 +26,7 @@ cd ..
 
 git clone https://github.com/open-iscsi/tcmu-runner
 cd tcmu-runner
-yum install -y cmake make gcc libnl3 glib2 zlib kmod libnl3-devel glib2-devel zlib-devel kmod-devel
+yum install -y cmake make gcc libnl3 glib2 zlib kmod libnl3-devel glib2-devel zlib-devel kmod-devel gperftools-devel
 cmake -DSUPPORT_SYSTEMD=ON -DCMAKE_INSTALL_PREFIX=/usr -Dwith-rbd=false -Dwith-qcow=false -Dwith-zbc=false -Dwith-fbo=false
 make install
 
