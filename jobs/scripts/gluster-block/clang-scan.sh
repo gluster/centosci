@@ -56,7 +56,7 @@ main()
     install_dependency
     clone_and_build_rpms
     scan-build -o clangScanBuildReports-${BUILD_ID} -disable-checker deadcode.DeadStores -v -v --use-cc clang --use-analyzer=/usr/bin/clang make
-    artifacts clangScanBuildReports-${BUILD_ID}
+    artifact clangScanBuildReports-${BUILD_ID}
     echo "Clang-scan Report has been archived at http://artifacts.ci.centos.org/gluster/gluster-block-nightly/"
 }
 

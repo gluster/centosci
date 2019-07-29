@@ -62,7 +62,12 @@ sed -i.bak '/stdout/d' coverage/gluster-block-lcov.info
 
 #Generating the html page for code coverage details using genhtml
 genhtml -o coverage/ coverage/gluster-block-lcov.info
-echo "The HTML report is archived as index.html file"
+
+#rsync the report to artifacts location
+RSYNC_DIR=gluster/gluster-block-nightly/Line-coverage
+mv coverage/index.html line-coverage-${BUILD_ID}
+rsync -av --password-file ~/rsync.passwd line-coverage-${BUILD_ID} gluster@artifacts.ci.centos.org::${RSYNC_DIR}/
+echo "The HTML report is archived http://artifacts.ci.centos.org/gluster/gluster-block-nightly/Line-coverage/line-coverage-${BUILD_ID}"
 popd
 
 if [ $TEST_STATUS -ne 0 ];
