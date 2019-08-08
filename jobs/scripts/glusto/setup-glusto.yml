@@ -250,6 +250,11 @@
   - name: Install python-docx
     pip: name=python-docx state=present
 
+  - name: Installing crefi using pip
+    pip:
+      name: crefi
+      state: present
+
 - hosts: gluster_nodes[1]
   tasks:
   - name: Peer probe all nodes
