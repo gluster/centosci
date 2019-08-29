@@ -47,7 +47,7 @@
     authorized_key:
       user: root
       state: present
-      key: "{{ lookup('file', '~/.ssh/glusto.pub') }}"
+      key: "{{ lookup('file', '/home/gluster/.ssh/glusto.pub') }}"
 
 - hosts: gluster_nodes
   tasks:
