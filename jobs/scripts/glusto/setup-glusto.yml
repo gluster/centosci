@@ -44,7 +44,10 @@
       workspace: "{{ lookup('env', 'GLUSTO_WORKSPACE') }}"
 
   - name: Add entries to authorized_keys
-    authorized_key: user=root key="{{ lookup('file', '/home/gluster/.ssh/glusto.pub')}}"
+    authorized_key:
+      user: root
+      state: present
+      key: "{{ lookup('file', '~/.ssh/glusto.pub') }}"
 
 - hosts: gluster_nodes
   tasks:
