@@ -43,13 +43,11 @@
     set_fact:
       workspace: "{{ lookup('env', 'GLUSTO_WORKSPACE') }}"
 
-  - name: Get the glusto public key
-    command: cat /home/gluster/.ssh/glusto.pub
-    register: key
-    delegate_to: 127.0.0.1
-
   - name: Add entries to authorized_keys
-    authorized_key: user=root key=key.stdout
+    authorized_key:
+      user: root
+      state: present
+      key: "{{ lookup('file', '/home/gluster/.ssh/glusto.pub') }}"
 
 - hosts: gluster_nodes
   tasks:
