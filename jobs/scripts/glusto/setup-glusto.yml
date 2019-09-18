@@ -258,6 +258,11 @@
       name: crefi
       state: present
 
+  - name: Installing numpy using pip
+    pip:
+      name: numpy
+      state: present
+
 - hosts: gluster_nodes[1]
   tasks:
   - name: Peer probe all nodes
