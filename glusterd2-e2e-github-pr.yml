@@ -1,0 +1,56 @@
+- job:
+    name: 'gluster_glusterd2_e2e'
+    node: gluster
+    description: Runs e2e tests against glusterd2 pull requests
+    project-type: freestyle
+    concurrent: true
+
+    scm:
+    - git:
+        url: https://github.com/gluster/glusterd2.git
+        branches:
+        - origin/master
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: !include-raw: scripts/common/rsync.sh
+    - shell: scripts/common/bootstrap.sh $WORKSPACE/extras/centos-ci.sh
+
+    properties:
+    - github:
+        url: https://github.com/gluster/glusterd2/
+    - build-discarder:
+        days-to-keep: 7
+        artifact-days-to-keep: 7
+
+    triggers:
+    - github-pull-request:
+        admin-list:
+        - aravindavk
+        - kshlm
+        - prashanthpai
+        org-list:
+        - gluster
+        auth-id: a9df0596-2fe4-4e12-a8a5-6856d007bfbc
+        cron: H/5 * * * *
+        github-hooks: true
+        trigger-phrase: retest this please
+        cancel-builds-on-update: true
+
+    publishers:
+    # TODO: Export logs
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
+
+    wrappers:
+    - timestamps
+    - ansicolor:
+        colormap: xterm
