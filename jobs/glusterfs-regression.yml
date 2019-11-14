@@ -1,0 +1,75 @@
+- job:
+    name: glusterfs-regression
+    node: gluster
+    description: Verify GlusterFS PRs
+    project-type: freestyle
+    concurrent: true
+
+    scm:
+    - git:
+        url: https://github.com/amarts/glusterfs.git
+        branches:
+        - $GITHUB_BRANCH
+
+    properties:
+    - github:
+        url: https://github.com/amarts/glusterfs/
+        display-name: centos-ci-regression
+    - build-discarder:
+        days-to-keep: 7
+        artifact-days-to-keep: 7
+
+    triggers:
+    - github-pull-request:
+        admin-list:
+        - amarts
+        - mscherer
+        - deepshikhaaa
+        - xhernandez
+        org-list:
+        - gluster
+        allow-whitelist-orgs-as-admins: true
+        auth-id: a9df0596-2fe4-4e12-a8a5-6856d007bfbc
+        auto-close-on-fail: false
+        build-desc-template: null
+        github-hooks: true
+        only-trigger-phrase: false
+        org-list:
+        - gluster
+        permit-all: false
+        trigger-phrase: "check centos"
+        white-list-target-branches: []
+        cancel-builds-on-update: true
+        status-context: centos-ci
+        failure-message-file: gluster_regression.txt
+
+    publishers:
+    - post-tasks:
+        - matches:
+            - log-text: Building remotely
+          script: !include-raw: scripts/common/return-node.sh
+
+    parameters:
+    - string:
+        default: ''
+        description: ghprbPullId will be set when the build is triggered
+          through a GitHub pull-request, leave empty for running a test against
+          the master branch
+        name: ghprbPullId
+    - string:
+        default: master
+        description: 'Name of the branch you want to build from. We usually build from master'
+        name: GITHUB_BRANCH
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/glusterfs/regression.sh "ghprbPullId=${ghprbPullId}"
+
+    wrappers:
+    - timestamps
+    - ansicolor:
+        colormap: xterm
+    - timeout:
+        timeout: 450
+        abort: true
+        type: absolute
