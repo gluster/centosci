@@ -29,7 +29,7 @@
         org-list:
         - gluster
         allow-whitelist-orgs-as-admins: true
-        auth-id: a9df0596-2fe4-4e12-a8a5-6856d007bfbc
+        #auth-id: a9df0596-2fe4-4e12-a8a5-6856d007bfbc
         auto-close-on-fail: false
         build-desc-template: null
         github-hooks: true
@@ -63,7 +63,7 @@
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/glusterfs/regression.sh "ghprbPullId=${ghprbPullId}"
+    - shell: scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/glusterfs/regression.sh "ghprbPullId=${ghprbPullId}"
 
     wrappers:
     - timestamps
