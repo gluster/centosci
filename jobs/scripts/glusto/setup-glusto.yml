@@ -250,18 +250,13 @@
     - pip
     - setuptools
 
-  - name: Install python-docx
-    pip: name=python-docx state=present
-
-  - name: Installing crefi using pip
-    pip:
-      name: crefi
-      state: present
-
-  - name: Installing numpy using pip
-    pip:
-      name: numpy
-      state: present
+  - name: Install python-docx, crefi, numpy and sh.
+    pip: name={{ item }} state=present
+    with_items:
+    - python-docx
+    - crefi
+    - numpy
+    - sh
 
 - hosts: gluster_nodes[1]
   tasks:
