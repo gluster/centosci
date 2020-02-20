@@ -19,6 +19,7 @@
 
     builders:
       - shell: !include-raw: scripts/common/get-node.sh
+      - shell: !include-raw: jobs/scripts/common/rsync.sh
       - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/gluster-block/clang-scan.sh
 
     parameters:

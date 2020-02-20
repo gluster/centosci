@@ -44,7 +44,10 @@
       workspace: "{{ lookup('env', 'GLUSTO_WORKSPACE') }}"
 
   - name: Add entries to authorized_keys
-    authorized_key: user=root key="{{ lookup('file', '/home/gluster/.ssh/glusto.pub')}}"
+    authorized_key:
+      user: root
+      state: present
+      key: "{{ lookup('file', '/home/gluster/.ssh/glusto.pub') }}"
 
 - hosts: gluster_nodes
   tasks:
@@ -247,8 +250,13 @@
     - pip
     - setuptools
 
-  - name: Install python-docx
-    pip: name=python-docx state=present
+  - name: Install python-docx, crefi, numpy and sh.
+    pip: name={{ item }} state=present
+    with_items:
+    - python-docx
+    - crefi
+    - numpy
+    - sh
 
 - hosts: gluster_nodes[1]
   tasks:
@@ -295,12 +303,15 @@
     copy: src="/home/gluster/.ssh/glusto" dest=/root/.ssh/id_rsa mode=600
 
   - name: Install git and pip
-    yum: name="{{item}}" state=present
+    yum: name="{{item}}" state=latest
     with_items:
     - git
     - python-pip
     - gcc
     - python-devel
+
+  - name: Upgrading pip
+    command: "pip install --upgrade pip"
 
   - name: Set glusto version
     set_fact:
