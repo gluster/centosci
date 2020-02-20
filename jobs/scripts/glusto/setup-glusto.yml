@@ -306,19 +306,20 @@
     yum: name="{{item}}" state=latest
     with_items:
     - git
-    - python-pip
+    - python3
+    - python3-pip
     - gcc
-    - python-devel
+    - python3-devel
 
   - name: Upgrading pip
-    command: "pip install --upgrade pip"
+    command: "pip3 install --upgrade pip"
 
   - name: Set glusto version
     set_fact:
       GERRIT_REFSPEC: "{{ lookup('env', 'GERRIT_REFSPEC') }}"
 
   - name: Install Glusto
-    pip: name=' git+git://github.com/loadtheaccumulator/glusto.git' editable=false
+    command: 'pip3 install git+git://github.com/loadtheaccumulator/glusto.git@python3_port4'
 
   - name: Clone the glusto-tests repo - {{ GERRIT_REFSPEC}}
     git:
@@ -328,7 +329,7 @@
         version: FETCH_HEAD
 
   - name: Install glustolibs
-    command: "python setup.py develop chdir=/root/glusto-tests/{{item}}"
+    command: "python3 setup.py develop chdir=/root/glusto-tests/{{item}}"
     with_items:
     - glustolibs-gluster
     - glustolibs-io
