@@ -1,0 +1,68 @@
+- job:
+    name: gluster_samba-integration
+    node: gluster
+    description: Run integrations for clustered samba on top of gluster.
+        They are run on latest bits from Samba and Gluster.  The test is run
+        periodically and on PRs to the samba-integration repository.
+    project-type: freestyle
+    concurrent: true
+
+    parameters:
+    - string:
+        default: '1'
+        description: Number of nodes for this test
+        name: NODE_COUNT
+    - string:
+        default: ''
+        description: ghprbPullId will be set when the build is triggered
+          through a GitHub pull-request, leave empty for running a test against
+          the master branch
+        name: ghprbPullId
+
+    scm:
+    - git:
+        url: https://github.com/gluster/samba-integration
+        branches:
+        - origin/centos-ci
+
+    properties:
+    - github:
+        url: https://github.com/gluster/samba-integration
+    - build-discarder:
+        days-to-keep: 7
+        artifact-days-to-keep: 7
+
+    triggers:
+    - timed: "H 0 * * *"
+    - github-pull-request:
+        admin-list:
+        - obnoxxx
+        - gd
+        - anoopcps9
+        - spuiuk
+        - nixpanic
+        cron: H/5 * * * *
+        status-context: centos-ci
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+      # the samba-integration:centos-ci branch contains a copy of bootstrap.sh
+      # from the gluster/centosci repo
+    - shell: ./bootstrap.sh samba-integration-centos-ci-tests.sh "ghprbPullId=${ghprbPullId}"
+
+    publishers:
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
+
+    wrappers:
+    - ansicolor:
+        colormap: xterm
+    - timestamps
+    - timeout:
+        # current build takes more than 2 hours, this gives some slack
+        timeout: 180
+        abort: true
