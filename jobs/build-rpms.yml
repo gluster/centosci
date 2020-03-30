@@ -20,7 +20,6 @@
     - choice:
         choices:
         - master
-        - release-4.1
         - release-5
         - release-6
         - release-7
