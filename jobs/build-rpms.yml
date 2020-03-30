@@ -27,6 +27,7 @@
         name: GERRIT_BRANCH
     - choice:
         choices:
+        - '8'
         - '7'
         - '6'
         description: CentOS version to build the RPMs
