@@ -1,0 +1,60 @@
+- job:
+    name: gluster_nightly-samba-rpm-builds
+    node: gluster
+    description: Build Samba RPMs.
+    project-type: freestyle
+    concurrent: true
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+    properties:
+    #- github:
+    #    # TODO: change the repo to final location
+    #    url: https://github.com/obnoxxx/samba-integration
+    - build-discarder:
+        days-to-keep: 7
+        #artifact-days-to-keep: 7
+
+    triggers:
+    - timed: "H 0 * * *"
+    # TODO: enable PR checking on the repo once in final location
+    #- github-pull-request:
+    #    admin-list:
+    #    - obnoxxx
+    #    - gd
+    #    - anoopcps9
+    #    - spuiuk
+    #    - nixpanic
+    #    cron: H/5 * * * *
+    #    status-context: centos-ci
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: !include-raw: scripts/common/rsync.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh
+
+    properties:
+    - build-discarder:
+        days-to-keep: 7
+
+    publishers:
+    # TODO: create status emails
+    #- email-ext:
+    #    attach-build-log: false
+    #    attachment: null
+    #    body: $DEFAULT_CONTENT
+    #    content-type: text
+    #    presend-script: $DEFAULT_PRESEND_SCRIPT
+    #    recipients: ci-results@gluster.org
+    #    reply-to: $DEFAULT_REPLYTO
+    #    subject: $DEFAULT_SUBJECT ($GERRIT_BRANCH on CentOS-$CENTOS_VERSION/$CENTOS_ARCH)
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh
