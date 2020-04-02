@@ -9,6 +9,10 @@ artifact()
 # if anything fails, we'll abort
 set -e
 
+[ -n "${GERRIT_BRANCH}" ] || ( echo "environment variable GERRIT_BRANCH is required"; exit 1 )
+[ -n "${CENTOS_VERSION}" ] || ( echo "environment variable CENTOS_VERSION is required"; exit 1 )
+[ -n "${CENTOS_ARCH}" ] || ( echo "environment variable CENTOS_ARCH is required"; exit 1 )
+
 # install basic dependencies for building the tarball and srpm
 yum -y install git autoconf automake gcc libtool bison flex make rpm-build mock createrepo_c centos-packager
 # gluster repositories contain additional -devel packages
