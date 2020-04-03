@@ -43,6 +43,9 @@
         - nixpanic
         cron: H/5 * * * *
         status-context: centos-ci
+        white-list-target-branches:
+        - master
+        - centos-ci
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
