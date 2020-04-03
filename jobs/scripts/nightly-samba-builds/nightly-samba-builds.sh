@@ -29,6 +29,20 @@ yum -y install git make rpm-build mock ansible createrepo_c
 git clone --depth=1 --branch="${BUILD_GIT_BRANCH}" "${BUILD_GIT_REPO}" "${BUILD_GIT_BRANCH}"
 cd "${BUILD_GIT_BRANCH}"
 
+# By default, we clone the branch ${BUILD_GIT_BRANCH},
+# but maybe this was triggered through a PR?
+if [ -n "${ghprbPullId}" ]
+then
+	git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
+	git checkout "pr_${ghprbPullId}"
+
+	git rebase "origin/${ghprbTargetBranch}"
+	if [ $? -ne 0 ] ; then
+		echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
+		exit 1
+	fi
+fi
+
 make "rpms.centos${CENTOS_VERSION}"
 
 pushd "${RESULT_DIR}"
