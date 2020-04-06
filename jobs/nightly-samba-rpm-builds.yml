@@ -16,7 +16,6 @@
         url: https://github.com/gluster/samba-integration
     - build-discarder:
         days-to-keep: 7
-        #artifact-days-to-keep: 7
 
     triggers:
     - timed: "H 0 * * *"
@@ -36,10 +35,6 @@
     - shell: !include-raw: scripts/common/get-node.sh
     - shell: !include-raw: scripts/common/rsync.sh
     - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=${ghprbPullId} ghprbTargetBranch=${ghprbTargetBranch}"
-
-    properties:
-    - build-discarder:
-        days-to-keep: 7
 
     publishers:
     # TODO: create status emails
