@@ -45,6 +45,12 @@ fi
 
 make "rpms.centos${CENTOS_VERSION}"
 
+# Don't upload the artifacts if running on a PR.
+if [ -n "${ghprbPullId}" ]
+then
+	exit 0
+fi
+
 pushd "${RESULT_DIR}"
 createrepo_c .
 popd
