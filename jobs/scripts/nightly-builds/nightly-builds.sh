@@ -109,6 +109,3 @@ pushd /srv/gluster/nightly
 artifact ${REPO_NAME}.repo
 artifact ${GERRIT_BRANCH}
 popd
-
-exit ${RET}
-
