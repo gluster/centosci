@@ -60,5 +60,3 @@ pushd "${RESULT_BASE}"
 artifact "${REPO_NAME}.repo"
 artifact "${SAMBA_BRANCH}"
 popd
-
-exit ${RET}
