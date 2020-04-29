@@ -43,6 +43,7 @@
         - phlogistonjohn
         - raghavendra-talur
         - ansiwen
+        - pkalever
         cron: H/5 * * * *
         status-context: centos-ci
 
