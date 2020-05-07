@@ -23,8 +23,6 @@ set -e
 # epel is needed to get more up-to-date versions of mock and ansible.
 yum -y install epel-release
 yum -y install git make rpm-build mock ansible createrepo_c
-# gluster repositories contain additional -devel packages
-#yum -y install centos-release-storage-common centos-release-gluster
 
 git clone --depth=1 --branch="${BUILD_GIT_BRANCH}" "${BUILD_GIT_REPO}" "${BUILD_GIT_BRANCH}"
 cd "${BUILD_GIT_BRANCH}"
