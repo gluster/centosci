@@ -44,6 +44,7 @@
         - raghavendra-talur
         - ansiwen
         - pkalever
+        - iamniting
         cron: H/5 * * * *
         status-context: centos-ci
 
