@@ -46,6 +46,7 @@
         white-list-target-branches:
         - master
         - centos-ci
+        - tests
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
