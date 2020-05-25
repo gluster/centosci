@@ -37,16 +37,13 @@
     - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=${ghprbPullId} ghprbTargetBranch=${ghprbTargetBranch}"
 
     publishers:
-    # TODO: create status emails
-    #- email-ext:
-    #    attach-build-log: false
-    #    attachment: null
-    #    body: $DEFAULT_CONTENT
-    #    content-type: text
-    #    presend-script: $DEFAULT_PRESEND_SCRIPT
-    #    recipients: ci-results@gluster.org
-    #    reply-to: $DEFAULT_REPLYTO
-    #    subject: $DEFAULT_SUBJECT ($GERRIT_BRANCH on CentOS-$CENTOS_VERSION/$CENTOS_ARCH)
+    - email-ext:
+        recipients: obnox@samba.org, gd@samba.org, anoopcs@cryptolab.net
+        reply-to: $DEFAULT_REPLYTO
+        subject: $DEFAULT_SUBJECT
+        content-type: text
+        body: $DEFAULT_CONTENT
+        always: true
     - post-tasks:
         - matches:
             # "Building remotely" should always be in the build console output
