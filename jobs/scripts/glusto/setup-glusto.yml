@@ -220,6 +220,7 @@
   - name: Install dependency packages
     yum: name={{ item }} state=installed
     with_items:
+    - git
     - python-pip
     - libxml2-devel
     - libxslt-devel
