@@ -104,6 +104,7 @@
     - cifs-utils
     - arequal
     - rsync
+    - libgfapi0
 
 # Set up servers
 - hosts: gluster_nodes[1:6]
