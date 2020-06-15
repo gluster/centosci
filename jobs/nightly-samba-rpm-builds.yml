@@ -1,0 +1,52 @@
+- job:
+    name: gluster_nightly-samba-rpm-builds
+    node: gluster
+    description: Build Samba RPMs.
+    project-type: freestyle
+    concurrent: true
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+    properties:
+    - github:
+        url: https://github.com/gluster/samba-integration
+    - build-discarder:
+        days-to-keep: 7
+
+    triggers:
+    - timed: "H 0 * * *"
+    - github-pull-request:
+        admin-list:
+        - obnoxxx
+        - gd
+        - anoopcs9
+        - spuiuk
+        - nixpanic
+        cron: H/5 * * * *
+        status-context: centos-ci
+        white-list-target-branches:
+        - samba-build
+
+    builders:
+    - shell: !include-raw: scripts/common/get-node.sh
+    - shell: !include-raw: scripts/common/rsync.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=${ghprbPullId} ghprbTargetBranch=${ghprbTargetBranch}"
+
+    publishers:
+    - email-ext:
+        recipients: obnox@samba.org, gd@samba.org, anoopcs@cryptolab.net
+        reply-to: $DEFAULT_REPLYTO
+        subject: $DEFAULT_SUBJECT
+        content-type: text
+        body: $DEFAULT_CONTENT
+        always: true
+    - post-tasks:
+        - matches:
+            # "Building remotely" should always be in the build console output
+            - log-text: Building remotely
+          script:
+            !include-raw: scripts/common/return-node.sh

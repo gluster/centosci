@@ -1,9 +1,9 @@
 - job:
-    name: gluster_heketi-functional
+    name: gluster_samba-integration
     node: gluster
-    description: Run the functional test from upstream Heketi against the
-      latest build of the glusterfs packages. A new run is executed
-      automatically against the nightly builds of the master branch.
+    description: Run integrations for clustered samba on top of gluster.
+        They are run on latest bits from Samba and Gluster.  The test is run
+        periodically and on PRs to the samba-integration repository.
     project-type: freestyle
     concurrent: true
 
@@ -21,38 +21,38 @@
 
     scm:
     - git:
-        url: https://github.com/heketi/ci-tests
+        url: https://github.com/gluster/samba-integration
         branches:
         - origin/centos-ci
 
     properties:
     - github:
-        url: https://github.com/heketi/heketi
+        url: https://github.com/gluster/samba-integration
     - build-discarder:
         days-to-keep: 7
         artifact-days-to-keep: 7
 
     triggers:
+    - timed: "H 0 * * *"
     - github-pull-request:
         admin-list:
-        - SaravanaStorageNetwork
-        - humblec
-        - jarrpa
-        - nixpanic
         - obnoxxx
-        - phlogistonjohn
-        - raghavendra-talur
-        - ansiwen
-        - pkalever
-        - iamniting
+        - gd
+        - anoopcs9
+        - spuiuk
+        - nixpanic
         cron: H/5 * * * *
         status-context: centos-ci
+        white-list-target-branches:
+        - master
+        - centos-ci
+        - tests
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    # the heketi/ci-tests repo contains a copy of bootstrap.sh from the
-    # gluster/centosci repo
-    - shell: ./bootstrap.sh heketi-centos-ci-tests.sh "ghprbPullId=${ghprbPullId}"
+      # the samba-integration:centos-ci branch contains a copy of bootstrap.sh
+      # from the gluster/centosci repo
+    - shell: ./bootstrap.sh samba-integration-centos-ci-tests.sh "ghprbPullId=${ghprbPullId} ghprbTargetBranch=${ghprbTargetBranch}"
 
     publishers:
     - post-tasks:

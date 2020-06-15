@@ -96,6 +96,14 @@
       gpgcheck: yes
       gpgkey: https://copr-be.cloud.fedoraproject.org/results/nigelbabu/arequal/pubkey.gpg
       repo_gpgcheck: no
+  
+  - name: Setup the repo
+    yum_repository:
+      name: gluster_nightly
+      description: The nightly repo for Gluster
+      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
+      gpgcheck: no
+      repo_gpgcheck: no
 
   - name: Install dependency packages
     yum: name={{ item }} state=installed
@@ -104,6 +112,7 @@
     - cifs-utils
     - arequal
     - rsync
+    - libgfapi0
 
 # Set up servers
 - hosts: gluster_nodes[1:6]
@@ -113,15 +122,6 @@
     yum: name={{ item }} state=installed
     with_items:
     - libibverbs
-
-  - name: Setup the repo
-    yum_repository:
-      name: gluster_nightly
-      description: The nightly repo for Gluster
-      #baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
-      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
-      gpgcheck: no
-      repo_gpgcheck: no
 
   - name: Install gluster
     yum: name={{ item }} state=installed
@@ -220,6 +220,7 @@
   - name: Install dependency packages
     yum: name={{ item }} state=installed
     with_items:
+    - git
     - python-pip
     - libxml2-devel
     - libxslt-devel
@@ -227,15 +228,6 @@
     - python-devel
     - fuse
     - fuse-libs
-
-  - name: Setup the repo
-    yum_repository:
-      name: gluster_nightly
-      description: The nightly repo for Gluster
-      #baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
-      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
-      gpgcheck: no
-      repo_gpgcheck: no
 
   - name: Install gluster
     yum: name={{ item }} state=installed
@@ -306,19 +298,20 @@
     yum: name="{{item}}" state=latest
     with_items:
     - git
-    - python-pip
+    - python3
+    - python3-pip
     - gcc
-    - python-devel
+    - python3-devel
 
   - name: Upgrading pip
-    command: "pip install --upgrade pip"
+    command: "pip3 install --upgrade pip"
 
   - name: Set glusto version
     set_fact:
       GERRIT_REFSPEC: "{{ lookup('env', 'GERRIT_REFSPEC') }}"
 
   - name: Install Glusto
-    pip: name=' git+git://github.com/loadtheaccumulator/glusto.git' editable=false
+    command: 'pip3 install git+git://github.com/loadtheaccumulator/glusto.git@python3_port4'
 
   - name: Clone the glusto-tests repo - {{ GERRIT_REFSPEC}}
     git:
@@ -328,7 +321,7 @@
         version: FETCH_HEAD
 
   - name: Install glustolibs
-    command: "python setup.py develop chdir=/root/glusto-tests/{{item}}"
+    command: "python3 setup.py develop chdir=/root/glusto-tests/{{item}}"
     with_items:
     - glustolibs-gluster
     - glustolibs-io
