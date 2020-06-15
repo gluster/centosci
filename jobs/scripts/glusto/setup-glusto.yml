@@ -96,6 +96,14 @@
       gpgcheck: yes
       gpgkey: https://copr-be.cloud.fedoraproject.org/results/nigelbabu/arequal/pubkey.gpg
       repo_gpgcheck: no
+  
+  - name: Setup the repo
+    yum_repository:
+      name: gluster_nightly
+      description: The nightly repo for Gluster
+      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
+      gpgcheck: no
+      repo_gpgcheck: no
 
   - name: Install dependency packages
     yum: name={{ item }} state=installed
@@ -114,15 +122,6 @@
     yum: name={{ item }} state=installed
     with_items:
     - libibverbs
-
-  - name: Setup the repo
-    yum_repository:
-      name: gluster_nightly
-      description: The nightly repo for Gluster
-      #baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
-      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
-      gpgcheck: no
-      repo_gpgcheck: no
 
   - name: Install gluster
     yum: name={{ item }} state=installed
@@ -229,15 +228,6 @@
     - python-devel
     - fuse
     - fuse-libs
-
-  - name: Setup the repo
-    yum_repository:
-      name: gluster_nightly
-      description: The nightly repo for Gluster
-      #baseurl: "{{ 'http://' + hostvars[groups['gluster_nodes'][0]]['ansible_eth0']['ipv4']['address'] + '/RPMS/' }}"
-      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
-      gpgcheck: no
-      repo_gpgcheck: no
 
   - name: Install gluster
     yum: name={{ item }} state=installed
