@@ -256,38 +256,38 @@
     command: "gluster peer probe {{hostvars[item]['ansible_eth0']['ipv4']['address']}}"
     with_items: "{{groups['gluster_nodes'][2:7]}}"
 
-  - name: Install dependency packages
-    yum: name={{ item }} state=installed
-    with_items:
-    - ctdb
-    - samba
-    - samba-vfs-glusterfs
-    - samba-client
+#  - name: Install dependency packages
+#    yum: name={{ item }} state=installed
+#    with_items:
+#    - ctdb
+#    - samba
+#    - samba-vfs-glusterfs
+#    - samba-client
 
-  - name: Start smb
-    service: name=smb state=started
+#  - name: Start smb
+#    service: name=smb state=started
 
-  - name: Setup SELinux for Samba
-    seboolean: name=samba_load_libgfapi state=yes persistent=yes
+#  - name: Setup SELinux for Samba
+#    seboolean: name=samba_load_libgfapi state=yes persistent=yes
 
-  - name: Setup SELinux in permissive mode
-    selinux: policy=targeted state=enforcing
+#  - name: Setup SELinux in permissive mode
+#    selinux: policy=targeted state=enforcing
 
-  - name: Setup Samba credentials
-    shell: (echo "foobar"; echo "foobar") | smbpasswd -a root
-  - name: Setup Samba configuration
-    blockinfile:
-      dest: /etc/samba/smb.conf
-      insertafter: '\[global\]'
-      content: |
-          kernel share modes = no
-          kernel oplocks = no
-          map archive = no
-          map hidden = no
-          map read only = no
-          map system = no
-          store dos attributes = yes
-    tags: smb
+#  - name: Setup Samba credentials
+#    shell: (echo "foobar"; echo "foobar") | smbpasswd -a root
+#  - name: Setup Samba configuration
+#    blockinfile:
+#      dest: /etc/samba/smb.conf
+#      insertafter: '\[global\]'
+#      content: |
+#          kernel share modes = no
+#          kernel oplocks = no
+#          map archive = no
+#          map hidden = no
+#          map read only = no
+#          map system = no
+#          store dos attributes = yes
+#    tags: smb
 
 - hosts: gluster_nodes[0]
   tasks:
