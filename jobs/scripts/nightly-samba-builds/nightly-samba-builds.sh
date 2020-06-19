@@ -75,6 +75,9 @@ cd "${BUILD_GIT_BRANCH}"
 # but maybe this was triggered through a PR?
 if [ -n "${ghprbPullId}" ]
 then
+	# We have to fetch the whole target branch to be able to rebase.
+	git fetch --unshallow  origin
+
 	git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
 	git checkout "pr_${ghprbPullId}"
 
