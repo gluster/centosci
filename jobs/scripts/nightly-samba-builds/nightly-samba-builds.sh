@@ -19,6 +19,9 @@ artifact()
 # if anything fails, we'll abort
 set -e
 
+# log the commands
+set -x
+
 # Install basic dependencies for building the tarball and srpm.
 # epel is needed to get more up-to-date versions of mock and ansible.
 yum -y install epel-release
