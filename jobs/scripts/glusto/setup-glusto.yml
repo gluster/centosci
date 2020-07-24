@@ -113,6 +113,7 @@
     - arequal
     - rsync
     - libgfapi0
+    - sos
 
 # Set up servers
 - hosts: gluster_nodes[1:6]
