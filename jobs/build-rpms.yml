@@ -9,22 +9,22 @@
     - git:
         url: https://github.com/gluster/centosci.git
         branches:
-        - origin/master
+        - origin/devel
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
     - shell: !include-raw: scripts/common/rsync.sh
-    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-builds/nightly-builds.sh "GERRIT_BRANCH=$GERRIT_BRANCH CENTOS_VERSION=$CENTOS_VERSION CENTOS_ARCH=$CENTOS_ARCH"
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-builds/nightly-builds.sh "GITHUB_BRANCH=$GITHUB_BRANCH CENTOS_VERSION=$CENTOS_VERSION CENTOS_ARCH=$CENTOS_ARCH"
 
     parameters:
     - choice:
         choices:
-        - master
+        - devel
         - release-5
         - release-6
         - release-7
         description: Gluster branch to build RPMs
-        name: GERRIT_BRANCH
+        name: GITHUB_BRANCH
     - choice:
         choices:
         - '8'
@@ -52,7 +52,7 @@
         presend-script: $DEFAULT_PRESEND_SCRIPT
         recipients: ci-results@gluster.org
         reply-to: $DEFAULT_REPLYTO
-        subject: $DEFAULT_SUBJECT ($GERRIT_BRANCH on CentOS-$CENTOS_VERSION/$CENTOS_ARCH)
+        subject: $DEFAULT_SUBJECT ($GITHUB_BRANCH on CentOS-$CENTOS_VERSION/$CENTOS_ARCH)
     - post-tasks:
         - matches:
             # "Building remotely" should always be in the build console output
