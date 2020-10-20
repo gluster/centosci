@@ -9,11 +9,22 @@ artifact()
 # if anything fails, we'll abort
 set -e
 
+BUILDREQUIRES="libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel libuuid-devel"
+
+if [ "${CENTOS_VERSION}" -eq 8 ]
+then
+    ENABLE_REPOS="--enablerepo=PowerTools,Devel"
+    BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel"
+    yum -y epel-release
+else
+    BUILDREQUIRES="${BUILDREQUIRES} python-devel"
+fi
+
 # install basic dependencies for building the tarball and srpm
 yum -y install git autoconf automake gcc libtool bison flex make rpm-build mock createrepo_c
 # gluster repositories contain additional -devel packages
 yum -y install centos-release-storage-common centos-release-gluster
-yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel libuuid-devel
+yum -y ${ENABLE_REPOS} install ${BUILDREQUIRES}
 
 # clone the repository, github is faster than our Gerrit
 #git clone https://review.gluster.org/glusterfs
