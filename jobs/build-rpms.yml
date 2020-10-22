@@ -23,6 +23,7 @@
         - release-5
         - release-6
         - release-7
+        - release-8
         description: Gluster branch to build RPMs
         name: GERRIT_BRANCH
     - choice:
