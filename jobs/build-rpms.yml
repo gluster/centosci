@@ -9,7 +9,7 @@
     - git:
         url: https://github.com/gluster/centosci.git
         branches:
-        - origin/devel
+        - origin/master
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
