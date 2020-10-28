@@ -229,6 +229,7 @@
     - python-devel
     - fuse
     - fuse-libs
+    - wget
 
   - name: Install gluster
     yum: name={{ item }} state=installed
@@ -250,7 +251,6 @@
     - crefi
     - numpy
     - sh
-    - wget
 
 - hosts: gluster_nodes[1]
   tasks:
