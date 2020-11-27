@@ -55,6 +55,13 @@
     - shell: ./bootstrap.sh samba-integration-centos-ci-tests.sh "ghprbPullId=${ghprbPullId} ghprbTargetBranch=${ghprbTargetBranch}"
 
     publishers:
+    - email-ext:
+        recipients: obnox@samba.org, gd@samba.org, anoopcs@cryptolab.net, sprabhu@redhat.com
+        reply-to: $DEFAULT_REPLYTO
+        subject: $DEFAULT_SUBJECT
+        content-type: text
+        body: $DEFAULT_CONTENT
+        always: true
     - post-tasks:
         - matches:
             # "Building remotely" should always be in the build console output
