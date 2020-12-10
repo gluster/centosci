@@ -101,7 +101,7 @@
     yum_repository:
       name: gluster_nightly
       description: The nightly repo for Gluster
-      baseurl: http://artifacts.ci.centos.org/gluster/nightly/master/$releasever/$basearch
+      baseurl: http://artifacts.ci.centos.org/gluster/nightly/devel/$releasever/$basearch
       gpgcheck: no
       repo_gpgcheck: no
 
