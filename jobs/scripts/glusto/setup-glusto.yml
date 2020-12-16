@@ -309,10 +309,10 @@
   - name: Upgrading pip
     command: "pip3 install --upgrade pip"
 
-  - name: Upgrading pip
+  - name: Install pytest
     command: "pip3 install pytest==6.1.2"
 
-  - name: Upgrading pip
+  - name: Install pypy
     command: "pip3 install py==1.9.0"
 
   - name: Set glusto version
