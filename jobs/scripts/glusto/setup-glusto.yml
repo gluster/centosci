@@ -309,6 +309,12 @@
   - name: Upgrading pip
     command: "pip3 install --upgrade pip"
 
+  - name: Upgrading pip
+    command: "pip3 install pytest==6.1.2"
+
+  - name: Upgrading pip
+    command: "pip3 install py==1.9.0"
+
   - name: Set glusto version
     set_fact:
       GERRIT_REFSPEC: "{{ lookup('env', 'GERRIT_REFSPEC') }}"
