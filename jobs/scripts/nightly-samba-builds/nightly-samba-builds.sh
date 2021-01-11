@@ -53,9 +53,10 @@ yum -y group install "Development Tools"
 # couple of times in a row to prevent it from failing. As a positive
 # side effect, it also avoids duplicate downloads of the RPM.
 #
-if ! rpm -q vagrant-2.2.7
+VAGRANT_VERSION="2.2.14"
+if ! rpm -q "vagrant-${VAGRANT_VERSION}"
 then
-	yum -y install https://releases.hashicorp.com/vagrant/2.2.7/vagrant_2.2.7_x86_64.rpm
+	yum -y install "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.rpm"
 fi
 
 vagrant plugin install vagrant-libvirt
