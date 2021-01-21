@@ -7,13 +7,6 @@ host=$(grep ansible_host hosts | head -n 1 | awk '{split($2, a, "="); print a[2]
 set -x
  
 GLUSTO_WORKSPACE="$WORKSPACE"
-# todo: not sure if this setup needed 
-if [ -d "glusto" ]; then
-  mv hosts centosci/hosts
-  pushd centosci
-  GLUSTO_WORKSPACE="$WORKSPACE"/centosci
-fi
-
 export GLUSTO_WORKSPACE
 
 # Retry Ansible runs thrice
