@@ -67,6 +67,6 @@
         colormap: xterm
     - timestamps
     - timeout:
-        # current build takes more than 2 hours, this gives some slack
-        timeout: 180
+        # current build takes more than 3 hours, this gives some slack
+        timeout: 300
         abort: true
