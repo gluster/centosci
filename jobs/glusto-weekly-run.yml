@@ -27,7 +27,7 @@
         artifact-days-to-keep: 8
 
     triggers:
-    - timed: "0 0 * * FRI"
+    - timed: "59 23 * * 5"
 
     parameters:
     - string:
