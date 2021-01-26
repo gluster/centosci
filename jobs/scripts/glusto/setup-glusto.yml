@@ -237,7 +237,7 @@
     with_items:
     - glusterfs-fuse
 
-#  - name: Update pip and setuptools
+  - name: Update pip and setuptools
     pip:
       name: "{{item}}"
       state: latest
