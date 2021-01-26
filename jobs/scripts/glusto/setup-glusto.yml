@@ -237,13 +237,13 @@
     with_items:
     - glusterfs-fuse
 
-  - name: Update pip and setuptools
-    pip:
-      name: "{{item}}"
-      state: latest
-    with_items:
-    - pip
-    - setuptools
+#  - name: Update pip and setuptools
+#    pip:
+#      name: "{{item}}"
+#      state: latest
+#    with_items:
+#    - pip
+#    - setuptools
 
   - name: Install python-docx, crefi, numpy and sh.
     pip: name={{ item }} state=latest
