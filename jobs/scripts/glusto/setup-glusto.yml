@@ -223,7 +223,7 @@
     yum: name={{ item }} state=installed
     with_items:
     - git
-    - python3-pip
+    - python-pip
     - libxml2-devel
     - libxslt-devel
     - gcc
@@ -242,7 +242,7 @@
       name: "{{item}}"
       state: latest
     with_items:
-#    - pip
+    - pip
     - setuptools
 
   - name: Install python-docx, crefi, numpy and sh.
