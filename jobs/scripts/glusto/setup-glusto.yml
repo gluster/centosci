@@ -236,9 +236,10 @@
     yum: name={{ item }} state=installed
     with_items:
     - glusterfs-fuse
-
- # pip 21.0 and later doesn't support python 2
- # To be reveretd once moved to CentOS 8 
+    
+ # Note:
+ # pip 21.0 or later doesn't support python 2
+ # To be reverted once moved to CentOS 8
   - name: Update pip
     command: "pip install --upgrade 'pip < 21.0'"
   
