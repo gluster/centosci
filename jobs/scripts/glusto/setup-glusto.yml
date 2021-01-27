@@ -236,14 +236,15 @@
     yum: name={{ item }} state=installed
     with_items:
     - glusterfs-fuse
-
-  - name: Update pip and setuptools
-    pip:
-      name: "{{item}}"
-      state: latest
-    with_items:
-    - pip
-    - setuptools
+    
+ # Note:
+ # pip 21.0 or later doesn't support python 2
+ # To be reverted once moved to CentOS 8
+  - name: Update pip
+    command: "pip install --upgrade 'pip < 21.0'"
+  
+  - name: Update setuptools
+    command: "pip install --upgrade setuptools"  
 
   - name: Install python-docx, crefi, numpy and sh.
     pip: name={{ item }} state=latest
