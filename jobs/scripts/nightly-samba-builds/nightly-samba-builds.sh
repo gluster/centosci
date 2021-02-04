@@ -19,6 +19,9 @@ artifact()
 # if anything fails, we'll abort
 set -e
 
+# log the commands
+set -x
+
 # Install basic dependencies for building the tarball and srpm.
 # epel is needed to get more up-to-date versions of mock and ansible.
 yum -y install epel-release
@@ -50,9 +53,10 @@ yum -y group install "Development Tools"
 # couple of times in a row to prevent it from failing. As a positive
 # side effect, it also avoids duplicate downloads of the RPM.
 #
-if ! rpm -q vagrant-2.2.7
+VAGRANT_VERSION="2.2.14"
+if ! rpm -q "vagrant-${VAGRANT_VERSION}"
 then
-	yum -y install https://releases.hashicorp.com/vagrant/2.2.7/vagrant_2.2.7_x86_64.rpm
+	yum -y install "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.rpm"
 fi
 
 vagrant plugin install vagrant-libvirt
@@ -72,6 +76,9 @@ cd "${BUILD_GIT_BRANCH}"
 # but maybe this was triggered through a PR?
 if [ -n "${ghprbPullId}" ]
 then
+	# We have to fetch the whole target branch to be able to rebase.
+	git fetch --unshallow  origin
+
 	git fetch origin "pull/${ghprbPullId}/head:pr_${ghprbPullId}"
 	git checkout "pr_${ghprbPullId}"
 

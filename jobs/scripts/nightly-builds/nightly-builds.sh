@@ -9,25 +9,36 @@ artifact()
 # if anything fails, we'll abort
 set -e
 
+BUILDREQUIRES="libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel libuuid-devel"
+
+if [ "${CENTOS_VERSION}" -eq 8 ]
+then
+    ENABLE_REPOS="--enablerepo=PowerTools,Devel"
+    BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel"
+    yum -y install epel-release
+else
+    BUILDREQUIRES="${BUILDREQUIRES} python-devel"
+fi
+
 # install basic dependencies for building the tarball and srpm
 yum -y install git autoconf automake gcc libtool bison flex make rpm-build mock createrepo_c
 # gluster repositories contain additional -devel packages
 yum -y install centos-release-storage-common centos-release-gluster
-yum -y install python-devel libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel libuuid-devel
+yum -y ${ENABLE_REPOS} install ${BUILDREQUIRES}
 
 # clone the repository, github is faster than our Gerrit
 #git clone https://review.gluster.org/glusterfs
-git clone --depth 1 --branch ${GERRIT_BRANCH} https://github.com/gluster/glusterfs
+git clone --depth 1 --branch ${GITHUB_BRANCH} https://github.com/gluster/glusterfs
 cd glusterfs/
 
 # generate a version based on branch.last-commit-date.last-commit-hash
-if [ ${GERRIT_BRANCH} = 'master' ]; then
+if [ ${GITHUB_BRANCH} = 'devel' ]; then
     GIT_VERSION=''
     GIT_HASH="$(git log -1 --format=%h)"
     GIT_DATE="$(git log -1 --format=format:%cd --date=short | sed 's/-//g')"
     VERSION="${GIT_DATE}.${GIT_HASH}"
 else
-    GIT_VERSION="$(sed 's/.*-//' <<< ${GERRIT_BRANCH})"
+    GIT_VERSION="$(sed 's/.*-//' <<< ${GITHUB_BRANCH})"
     GIT_HASH="$(git log -1 --format=%h)"
     GIT_DATE="$(git log -1 --format=format:%cd --date=short | sed 's/-//g')"
     VERSION="${GIT_VERSION}.${GIT_DATE}.${GIT_HASH}"
@@ -79,7 +90,7 @@ esac
 
 # do the actual RPM build in mock
 # TODO: use a CentOS Storage SIG buildroot
-RESULTDIR=/srv/gluster/nightly/${GERRIT_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
+RESULTDIR=/srv/gluster/nightly/${GITHUB_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
 /usr/bin/mock \
     --root epel-${CENTOS_VERSION}-${CENTOS_ARCH} \
     ${MOCK_RPM_OPTS} \
@@ -96,16 +107,16 @@ if [ -z "${GIT_VERSION}" ]; then
     REPO_NAME='master'
 else
     REPO_VERSION=$(sed 's/\.//' <<< ${GIT_VERSION})
-    REPO_NAME=${GERRIT_BRANCH}
+    REPO_NAME=${GITHUB_BRANCH}
 fi
 
 cat > /srv/gluster/nightly/${REPO_NAME}.repo <<< "[gluster-nightly-${REPO_VERSION}]
-name=Gluster Nightly builds (${GERRIT_BRANCH} branch)
-baseurl=http://artifacts.ci.centos.org/gluster/nightly/${GERRIT_BRANCH}/\$releasever/\$basearch
+name=Gluster Nightly builds (${GITHUB_BRANCH} branch)
+baseurl=http://artifacts.ci.centos.org/gluster/nightly/${GITHUB_BRANCH}/\$releasever/\$basearch
 enabled=1
 gpgcheck=0"
 
 pushd /srv/gluster/nightly
 artifact ${REPO_NAME}.repo
-artifact ${GERRIT_BRANCH}
+artifact ${GITHUB_BRANCH}
 popd
