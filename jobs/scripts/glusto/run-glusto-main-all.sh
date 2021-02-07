@@ -29,11 +29,15 @@ do
     RETRY=$((RETRY+1))
 done
 
-
-GLUSTO_MODULE="dht" #temporary we run all dht tests, for full-run string will be empty
+# run bvt and cvt tests
+GLUSTO_MODULE="bvt"
+EXIT_ON_FAIL="False" 
 scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no jobs/scripts/glusto/run-glusto.sh "root@${host}:run-glusto.sh"
 ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" EXIT_ON_FAIL="$EXIT_ON_FAIL" ./run-glusto.sh -m "$GLUSTO_MODULE"
 JENKINS_STATUS=$?
-
+if [ $JENKINS_STATUS -eq 0 ]; then
+    GLUSTO_MODULE="cvt"
+    ssh -t -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "root@$host" EXIT_ON_FAIL="$EXIT_ON_FAIL" ./run-glusto.sh -m "$GLUSTO_MODULE"
+fi
 source $GLUSTO_WORKSPACE/jobs/scripts/glusto/get-glusto-logs.sh
 exit $JENKINS_STATUS
