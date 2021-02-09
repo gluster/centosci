@@ -20,17 +20,15 @@
     - choice:
         choices:
         - devel
-        - release-5
-        - release-6
         - release-7
         - release-8
+        - release-9
         description: Gluster branch to build RPMs
         name: GITHUB_BRANCH
     - choice:
         choices:
         - '8'
         - '7'
-        - '6'
         description: CentOS version to build the RPMs
         name: CENTOS_VERSION
     - choice:
