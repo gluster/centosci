@@ -27,6 +27,24 @@
             CENTOS_VERSION=7
 
             CENTOS_ARCH=x86_64
+      - trigger-builds:
+        - project: gluster_build-rpms
+          block: false
+          predefined-parameters:
+            GITHUB_BRANCH=release-9
+
+            CENTOS_VERSION=7
+
+            CENTOS_ARCH=x86_64
+    - trigger-builds:
+        - project: gluster_build-rpms
+          block: false
+          predefined-parameters:
+            GITHUB_BRANCH=release-9
+
+            CENTOS_VERSION=8
+
+            CENTOS_ARCH=x86_64
     - trigger-builds:
         - project: gluster_build-rpms
           block: false
