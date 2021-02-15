@@ -32,7 +32,7 @@
         org-list:
           - gluster
         github-hooks: true
-        only-trigger-phrase: false
+        only-trigger-phrase: true
         trigger-phrase: '/run tests'
         permit-all: true
         status-context: "Testing: centos-ci-{nodeversion}"
