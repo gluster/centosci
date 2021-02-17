@@ -1,5 +1,13 @@
-- job:
+- project:
     name: gluster_nightly-samba-rpm-builds
+    centos_version:
+      - '8'
+      - '7'
+    jobs:
+      - 'gluster_samba-build-rpms-centos{centos_version}'
+
+- job-template:
+    name: 'gluster_samba-build-rpms-centos{centos_version}'
     node: gluster
     description: Build Samba RPMs.
     project-type: freestyle
@@ -10,6 +18,12 @@
         url: https://github.com/gluster/centosci.git
         branches:
         - origin/master
+
+    parameters:
+      - string:
+          name: CENTOS_VERSION
+          default: '{centos_version}'
+          description: CentOS version to build the RPMs
 
     properties:
     - github:
@@ -32,9 +46,9 @@
         - samba-build
 
     builders:
-    - shell: !include-raw: scripts/common/get-node.sh
-    - shell: !include-raw: scripts/common/rsync.sh
-    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=${ghprbPullId} ghprbTargetBranch=${ghprbTargetBranch}"
+    - shell: !include-raw-escape: scripts/common/get-node.sh
+    - shell: !include-raw-escape: scripts/common/rsync.sh
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION"
 
     publishers:
     - email-ext:
@@ -49,4 +63,4 @@
             # "Building remotely" should always be in the build console output
             - log-text: Building remotely
           script:
-            !include-raw: scripts/common/return-node.sh
+            !include-raw-escape: scripts/common/return-node.sh
