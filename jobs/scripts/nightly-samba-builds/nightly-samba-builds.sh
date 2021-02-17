@@ -3,7 +3,7 @@
 BUILD_GIT_REPO="https://github.com/gluster/samba-integration"
 BUILD_GIT_BRANCH="samba-build"
 SAMBA_BRANCH='master'
-CENTOS_VERSION='7'
+CENTOS_VERSION="${CENTOS_VERSION:-7}"
 CENTOS_ARCH='x86_64'
 RESULT_BASE="/tmp/samba-build/rpms"
 RESULT_DIR="${RESULT_BASE}/${SAMBA_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}"
