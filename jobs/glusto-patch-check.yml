@@ -28,9 +28,6 @@
     triggers:
     - github-pull-request:
         cancel-builds-on-update: true
-        allow-whitelist-orgs-as-admins: true
-        org-list:
-          - gluster
         github-hooks: true
         only-trigger-phrase: true
         trigger-phrase: '/run tests'
