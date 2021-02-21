@@ -18,7 +18,7 @@
         url: https://github.com/gluster/centosci.git
         basedir: centosci
         branches:
-        - origin/master
+        - origin/main
         wipe-workspace: false
 
     properties:
