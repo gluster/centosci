@@ -27,7 +27,7 @@
             CENTOS_VERSION=7
 
             CENTOS_ARCH=x86_64
-      - trigger-builds:
+    - trigger-builds:
         - project: gluster_build-rpms
           block: false
           predefined-parameters:
