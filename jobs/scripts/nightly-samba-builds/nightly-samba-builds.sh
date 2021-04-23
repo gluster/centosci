@@ -2,18 +2,19 @@
 
 BUILD_GIT_REPO="https://github.com/gluster/samba-integration"
 BUILD_GIT_BRANCH="samba-build"
-SAMBA_BRANCH='master'
+SAMBA_BRANCH="${SAMBA_BRANCH:-master}"
+SAMBA_MAJOR_VERS=$([ "${SAMBA_BRANCH}" != "master" ] && ( (tmp="${SAMBA_BRANCH//[a-zA-Z]}" && echo "${tmp//-/.}") | sed 's/.$//' ) || echo "${SAMBA_BRANCH}" )
 CENTOS_VERSION="${CENTOS_VERSION:-7}"
 CENTOS_ARCH='x86_64'
 RESULT_BASE="/tmp/samba-build/rpms"
-RESULT_DIR="${RESULT_BASE}/${SAMBA_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}"
-REPO_NAME="samba-nightly-${SAMBA_BRANCH}"
+RESULT_DIR="${RESULT_BASE}/${SAMBA_MAJOR_VERS}/${CENTOS_VERSION}/${CENTOS_ARCH}"
+REPO_NAME="samba-nightly-${SAMBA_MAJOR_VERS}"
 REPO_FILE="${RESULT_BASE}/${REPO_NAME}.repo"
 
 artifact()
 {
     [ -e ~/rsync.passwd ] || return 0
-    rsync -av --password-file ~/rsync.passwd ${@} gluster@artifacts.ci.centos.org::gluster/nightly-samba/
+    rsync -av --password-file ~/rsync.passwd "${@}" gluster@artifacts.ci.centos.org::gluster/nightly-samba/
 }
 
 # if anything fails, we'll abort
@@ -87,10 +88,29 @@ then
 		echo "Unable to automatically rebase to branch '${ghprbTargetBranch}'. Please rebase your PR!"
 		exit 1
 	fi
+
+	proceed=0
+
+	read -r -d '' -a FILES_CHANGED < <(git diff --name-only origin/"${ghprbTargetBranch}")
+
+	for i in "${FILES_CHANGED[@]}"
+	do
+		if [[ $i =~ "spec" ]] && [[ $i =~ ${SAMBA_MAJOR_VERS} ]]
+		then
+			proceed=1
+			break
+		fi
+	done
+
+	if [ $proceed -eq 0 ]; then
+		echo "RPM spec file unchanged for version ${SAMBA_MAJOR_VERS}, skipping..."
+		exit 0
+	fi
+
 fi
 
-make "rpms.centos${CENTOS_VERSION}"
-make "test.rpms.centos${CENTOS_VERSION}"
+make "rpms.centos${CENTOS_VERSION}" "refspec=${SAMBA_BRANCH}"
+make "test.rpms.centos${CENTOS_VERSION}" "refspec=${SAMBA_BRANCH}"
 
 # Don't upload the artifacts if running on a PR.
 if [ -n "${ghprbPullId}" ]
@@ -104,12 +124,12 @@ popd
 
 # create a new .repo file (for new branches, and it prevents cleanup)
 cat > "${REPO_FILE}" <<< "[${REPO_NAME}]
-name=Samba Nightly Builds (${SAMBA_BRANCH} branch)
-baseurl=http://artifacts.ci.centos.org/gluster/nightly-samba/${SAMBA_BRANCH}/\$releasever/\$basearch
+name=Samba Nightly Builds (${SAMBA_MAJOR_VERS} branch)
+baseurl=http://artifacts.ci.centos.org/gluster/nightly-samba/${SAMBA_MAJOR_VERS}/\$releasever/\$basearch
 enabled=1
 gpgcheck=0"
 
 pushd "${RESULT_BASE}"
 artifact "${REPO_NAME}.repo"
-artifact "${SAMBA_BRANCH}"
+artifact "${SAMBA_MAJOR_VERS}"
 popd

@@ -3,11 +3,15 @@
     centos_version:
       - '8'
       - '7'
+    samba_branch:
+      - 'master'
+      - 'v4-14-test'
+      - 'v4-13-test'
     jobs:
-      - 'gluster_samba-build-rpms-centos{centos_version}'
+      - 'gluster_samba-build-rpms-centos{centos_version}-{samba_branch}'
 
 - job-template:
-    name: 'gluster_samba-build-rpms-centos{centos_version}'
+    name: 'gluster_samba-build-rpms-centos{centos_version}-{samba_branch}'
     node: gluster
     description: Build Samba RPMs.
     project-type: freestyle
@@ -24,6 +28,10 @@
           name: CENTOS_VERSION
           default: '{centos_version}'
           description: CentOS version to build the RPMs
+      - string:
+          name: SAMBA_BRANCH
+          default: '{samba_branch}'
+          description: Samba release branch to build from
 
     properties:
     - github:
@@ -41,7 +49,7 @@
         - spuiuk
         - nixpanic
         cron: H/5 * * * *
-        status-context: 'samba-build-rpms/centos{centos_version}'
+        status-context: 'samba-build-rpms/centos{centos_version}/{samba_branch}'
         white-list-target-branches:
         - samba-build
     - pollurl:
@@ -54,7 +62,7 @@
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
     - shell: !include-raw-escape: scripts/common/rsync.sh
-    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION"
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION SAMBA_BRANCH=$SAMBA_BRANCH"
 
     publishers:
     - email-ext:
