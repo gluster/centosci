@@ -64,7 +64,7 @@ fi
 
 # generate the tar.gz archive
 ./autogen.sh
-./configure --enable-fusermount --enable-gnfs
+./configure --enable-fusermount --enable-gnfs --disable-linux-io_uring
 rm -f *.tar.gz
 make dist
 
