@@ -61,7 +61,6 @@
         subject: $DEFAULT_SUBJECT
         content-type: text
         body: $DEFAULT_CONTENT
-        always: true
     - post-tasks:
         - matches:
             # "Building remotely" should always be in the build console output
