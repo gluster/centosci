@@ -14,7 +14,7 @@ BUILDREQUIRES="libaio-devel librdmacm-devel libattr-devel libxml2-devel readline
 if [ "${CENTOS_VERSION}" -eq 8 ]
 then
     ENABLE_REPOS="--enablerepo=PowerTools,Devel"
-    BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel"
+    BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel liburing-devel"
     yum -y install epel-release
 else
     BUILDREQUIRES="${BUILDREQUIRES} python-devel"
@@ -64,7 +64,13 @@ fi
 
 # generate the tar.gz archive
 ./autogen.sh
-./configure --enable-fusermount --enable-gnfs --disable-linux-io_uring
+if [ "${CENTOS_VERSION}" -eq 7 ]
+then
+    ./configure --enable-fusermount --enable-gnfs --disable-linux-io_uring
+else
+    ./configure --enable-fusermount --enable-gnfs
+fi
+
 rm -f *.tar.gz
 make dist
 
