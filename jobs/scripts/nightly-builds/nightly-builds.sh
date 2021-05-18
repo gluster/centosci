@@ -9,7 +9,7 @@ artifact()
 # if anything fails, we'll abort
 set -e
 
-BUILDREQUIRES="libaio-devel librdmacm-devel libattr-devel libxml2-devel readline-devel openssl-devel libibverbs-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel sqlite-devel libuuid-devel"
+BUILDREQUIRES="libaio-devel libattr-devel libxml2-devel readline-devel openssl-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel libuuid-devel"
 
 if [ "${CENTOS_VERSION}" -eq 8 ]
 then
