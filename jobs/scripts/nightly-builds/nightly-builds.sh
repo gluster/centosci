@@ -13,7 +13,7 @@ BUILDREQUIRES="libaio-devel libattr-devel libxml2-devel readline-devel openssl-d
 
 if [ "${CENTOS_VERSION}" -eq 8 ]
 then
-    ENABLE_REPOS="--enablerepo=PowerTools,Devel"
+    ENABLE_REPOS="--enablerepo=powertools,Devel"
     BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel liburing-devel"
     yum -y install epel-release
 else
