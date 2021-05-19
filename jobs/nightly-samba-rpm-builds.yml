@@ -44,6 +44,12 @@
         status-context: 'samba-build-rpms/centos{centos_version}'
         white-list-target-branches:
         - samba-build
+    - pollurl:
+        cron: 'H/5 * * * *'
+        urls:
+          - url: 'https://github.com/gluster/samba-integration/commit/samba-build.patch'
+            check-content:
+              - simple: true
 
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
