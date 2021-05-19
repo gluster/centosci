@@ -91,7 +91,7 @@ then
 
 	proceed=0
 
-	read -r -d '' -a FILES_CHANGED < <(git diff --name-only origin/"${ghprbTargetBranch}")
+	readarray FILES_CHANGED < <(git diff --name-only origin/"${ghprbTargetBranch}")
 
 	for i in "${FILES_CHANGED[@]}"
 	do
