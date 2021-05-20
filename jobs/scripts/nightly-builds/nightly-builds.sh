@@ -15,7 +15,9 @@ if [ "${CENTOS_VERSION}" -eq 8 ]
 then
     ENABLE_REPOS="--enablerepo=powertools,devel"
     BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel liburing-devel"
+    yum -y update
     yum -y install epel-release
+    cat /etc/os-release
 else
     BUILDREQUIRES="${BUILDREQUIRES} python-devel"
 fi
