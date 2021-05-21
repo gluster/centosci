@@ -9,7 +9,7 @@ SSID_FILE=${SSID_FILE:-$WORKSPACE/cico-ssid}
 rm -rf $ANSIBLE_HOSTS
 
 # Get nodes
-nodes=$(cico -q node get --count ${NODE_COUNT} --column hostname --column ip_address --column comment -f value)
+nodes=$(cico -q node get --count ${NODE_COUNT} --column hostname --release ${CENTOS_VERSION} --column ip_address --column comment -f value)
 cico_ret=$?
 
 # Fail in case cico returned an error, or no nodes at all
