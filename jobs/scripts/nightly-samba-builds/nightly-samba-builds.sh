@@ -33,12 +33,14 @@ yum -y install git make rpm-build mock ansible createrepo_c
 
 yum -y install \
 	qemu-kvm \
-	qemu-kvm-tools \
 	qemu-img \
 	make \
 	ansible \
 	libvirt \
 	libvirt-devel
+
+# only need to install rsync on CentOS 8 and newer
+[ "${CENTOS_VERSION}" -lt "8" ] || dnf -y install rsync
 
 # "Development Tools" and libvirt-devel are needed to run
 # "vagrant plugin install"
@@ -60,7 +62,12 @@ then
 	yum -y install "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.rpm"
 fi
 
-vagrant plugin install vagrant-libvirt
+# Since CentOS 8 is based on Fedora 32, following configuration is required for
+# libvirt plugin installation when upstream rpm is consumed.
+# See bullet point "Fedora 32 + upstream Vagrant:" from https://github.com/vagrant-libvirt/vagrant-libvirt#installation
+[ "${CENTOS_VERSION}" -lt "8" ] || VAGRANT_CONFIG_PARAMS="with-libvirt-include=/usr/include/libvirt with-libvirt-lib=/usr/lib64"
+
+CONFIGURE_ARGS="${VAGRANT_CONFIG_PARAMS}" vagrant plugin install vagrant-libvirt
 
 # Vagrant needs libvirtd running
 systemctl start libvirtd
