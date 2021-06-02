@@ -28,46 +28,43 @@ set -x
 yum -y install epel-release
 yum -y install git make rpm-build mock ansible createrepo_c
 
+# Install QEMU-KVM and Libvirt packages
+yum -y install qemu-kvm qemu-img libvirt libvirt-devel
 
-# Install vagrant/vagrant-libvirt and prerequisites to run the rpm install test.
-
-yum -y install \
-	qemu-kvm \
-	qemu-img \
-	make \
-	ansible \
-	libvirt \
-	libvirt-devel
-
-# only need to install rsync on CentOS 8 and newer
-[ "${CENTOS_VERSION}" -lt "8" ] || dnf -y install rsync
-
-# "Development Tools" and libvirt-devel are needed to run
-# "vagrant plugin install"
+# "Development Tools" are needed to run "vagrant plugin install"
 yum -y group install "Development Tools"
 
-
-# We install vagrant directly from upstream hashicorp since
-# the centos/scl vagrant packages are deprecated / broken.
-
-# yum install fails if the package is already installed at the desired
-# version, so we check whether vagrant is already installed at that
-# version. This is important to check when the script is invoked a
-# couple of times in a row to prevent it from failing. As a positive
-# side effect, it also avoids duplicate downloads of the RPM.
-#
-VAGRANT_VERSION="2.2.14"
-if ! rpm -q "vagrant-${VAGRANT_VERSION}"
+# Install vagrant/vagrant-libvirt and prerequisites to run the rpm install test.
+if [ "${CENTOS_VERSION}" -ge "8" ]
 then
-	yum -y install "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.rpm"
+	# Use Fedora COPR maintained builds for vagrant and its dependencies
+	# including libvirt plugin instead of upstream version with added
+	# difficulty of rebuilding krb5 and libssh libraries.
+	dnf -y copr enable pvalena/rubygems
+	dnf -y copr enable pvalena/vagrant
+	dnf -y install vagrant vagrant-libvirt rubygem-erubis rsync
+
+	# QEMU would require search permission inside root's home for accessing
+	# libvirt specific images under /root/.local/share/libvirt/images/
+	setfacl -m u:qemu:x /root/
+else
+	# We install vagrant directly from upstream hashicorp since
+	# the centos/scl vagrant packages are deprecated / broken on CentOS 7.
+
+	# yum install fails if the package is already installed at the desired
+	# version, so we check whether vagrant is already installed at that
+	# version. This is important to check when the script is invoked a
+	# couple of times in a row to prevent it from failing. As a positive
+	# side effect, it also avoids duplicate downloads of the RPM.
+	#
+	VAGRANT_VERSION="2.2.14"
+	if ! rpm -q "vagrant-${VAGRANT_VERSION}"
+	then
+		yum -y install "https://releases.hashicorp.com/vagrant/${VAGRANT_VERSION}/vagrant_${VAGRANT_VERSION}_x86_64.rpm"
+	fi
+
+	vagrant plugin install vagrant-libvirt
 fi
-
-# Since CentOS 8 is based on Fedora 32, following configuration is required for
-# libvirt plugin installation when upstream rpm is consumed.
-# See bullet point "Fedora 32 + upstream Vagrant:" from https://github.com/vagrant-libvirt/vagrant-libvirt#installation
-[ "${CENTOS_VERSION}" -lt "8" ] || VAGRANT_CONFIG_PARAMS="with-libvirt-include=/usr/include/libvirt with-libvirt-lib=/usr/lib64"
-
-CONFIGURE_ARGS="${VAGRANT_CONFIG_PARAMS}" vagrant plugin install vagrant-libvirt
 
 # Vagrant needs libvirtd running
 systemctl start libvirtd
