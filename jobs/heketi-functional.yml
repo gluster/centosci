@@ -18,6 +18,10 @@
           through a GitHub pull-request, leave empty for running a test against
           the master branch
         name: ghprbPullId
+    - string:
+        default: '7'
+        description: CentOS version to be installed on host node
+        name: CENTOS_VERSION
 
     scm:
     - git:
