@@ -6,7 +6,7 @@
     concurrent: true
 
     triggers:
-    - timed: "H 0 * * *"
+    - timed: "H 21 * * *"
 
     builders:
     - trigger-builds:
