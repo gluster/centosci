@@ -4,12 +4,13 @@ BUILD_GIT_REPO="https://github.com/gluster/samba-integration"
 BUILD_GIT_BRANCH="samba-build"
 SAMBA_BRANCH="${SAMBA_BRANCH:-master}"
 SAMBA_MAJOR_VERS=$([ "${SAMBA_BRANCH}" != "master" ] && ( (tmp="${SAMBA_BRANCH//[a-zA-Z]}" && echo "${tmp//-/.}") | sed 's/.$//' ) || echo "${SAMBA_BRANCH}" )
-CENTOS_VERSION="${CENTOS_VERSION:-7}"
-CENTOS_ARCH='x86_64'
+PLATFORM="${OS_VERSION//[0-9]}"
+VERSION="${OS_VERSION//[a-zA-Z]}"
+CENTOS_ARCH='x86-64'
 RESULT_BASE="/tmp/samba-build/rpms"
-RESULT_DIR="${RESULT_BASE}/${SAMBA_MAJOR_VERS}/${CENTOS_VERSION}/${CENTOS_ARCH}"
+RESULT_DIR="${RESULT_BASE}/${SAMBA_MAJOR_VERS}/${PLATFORM}/${VERSION}/${CENTOS_ARCH}"
 REPO_NAME="samba-nightly-${SAMBA_MAJOR_VERS}"
-REPO_FILE="${RESULT_BASE}/${REPO_NAME}.repo"
+REPO_FILE="${RESULT_BASE}/${SAMBA_MAJOR_VERS}/${PLATFORM}/${REPO_NAME}.repo"
 
 artifact()
 {
@@ -99,22 +100,28 @@ then
 
 	for i in "${FILES_CHANGED[@]}"
 	do
-		if [[ $i =~ "spec" ]] && [[ $i =~ ${SAMBA_MAJOR_VERS} ]]
+		if [[ "$i" =~ "spec" ]] && [[ "$i" =~ ${SAMBA_MAJOR_VERS} ]]
 		then
 			proceed=1
 			break
 		fi
 	done
 
-	if [ $proceed -eq 0 ]; then
+	if [ ${proceed} -eq 0 ]; then
 		echo "RPM spec file unchanged for version ${SAMBA_MAJOR_VERS}, skipping..."
 		exit 0
 	fi
 
 fi
 
-make "rpms.centos${CENTOS_VERSION}" "refspec=${SAMBA_BRANCH}"
-make "test.rpms.centos${CENTOS_VERSION}" "refspec=${SAMBA_BRANCH}"
+if [[ "${PLATFORM}" = "fedora" ]]
+then
+	make "rpms.fedora" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
+	make "test.rpms.fedora" "vers=${VERSION}" "refspec=${SAMBA_BRANCH}"
+else
+	make "rpms.${PLATFORM}${VERSION}" "refspec=${SAMBA_BRANCH}"
+	make "test.rpms.${PLATFORM}${VERSION}" "refspec=${SAMBA_BRANCH}"
+fi
 
 # Don't upload the artifacts if running on a PR.
 if [ -n "${ghprbPullId}" ]
@@ -129,11 +136,10 @@ popd
 # create a new .repo file (for new branches, and it prevents cleanup)
 cat > "${REPO_FILE}" <<< "[${REPO_NAME}]
 name=Samba Nightly Builds (${SAMBA_MAJOR_VERS} branch)
-baseurl=http://artifacts.ci.centos.org/gluster/nightly-samba/${SAMBA_MAJOR_VERS}/\$releasever/\$basearch
+baseurl=http://artifacts.ci.centos.org/gluster/nightly-samba/${SAMBA_MAJOR_VERS}/${PLATFORM}/\$releasever/\$basearch
 enabled=1
 gpgcheck=0"
 
 pushd "${RESULT_BASE}"
-artifact "${REPO_NAME}.repo"
 artifact "${SAMBA_MAJOR_VERS}"
 popd
