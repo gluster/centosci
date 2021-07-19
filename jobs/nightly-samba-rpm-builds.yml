@@ -68,7 +68,7 @@
     builders:
     - shell: !include-raw-escape: scripts/common/get-node.sh
     - shell: !include-raw-escape: scripts/common/rsync.sh
-    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch OS_VERSION=$OS_VERSION SAMBA_BRANCH=$SAMBA_BRANCH"
+    - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-samba-builds/nightly-samba-builds.sh "ghprbPullId=$ghprbPullId ghprbTargetBranch=$ghprbTargetBranch CENTOS_VERSION=$CENTOS_VERSION OS_VERSION=$OS_VERSION SAMBA_BRANCH=$SAMBA_BRANCH"
 
     publishers:
     - email-ext:
