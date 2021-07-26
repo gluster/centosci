@@ -56,7 +56,7 @@
     - shell: !include-raw: scripts/common/get-node.sh
       # the samba-integration:centos-ci branch contains a copy of bootstrap.sh
       # from the gluster/centosci repo
-    - shell: ./bootstrap.sh samba-integration-centos-ci-tests.sh "ghprbPullId=${ghprbPullId} ghprbTargetBranch=${ghprbTargetBranch}"
+    - shell: ./bootstrap.sh samba-integration-centos-ci-tests.sh "ghprbPullId=${ghprbPullId} ghprbTargetBranch=${ghprbTargetBranch} CENTOS_VERSION=${CENTOS_VERSION}"
 
     publishers:
     - email-ext:
