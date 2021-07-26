@@ -19,7 +19,7 @@
           the master branch
         name: ghprbPullId
     - string:
-        default: '7'
+        default: '8'
         description: CentOS version to be installed on host node
         name: CENTOS_VERSION
 
