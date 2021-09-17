@@ -9,7 +9,7 @@ artifact()
 # if anything fails, we'll abort
 set -e
 
-BUILDREQUIRES="libaio-devel libattr-devel libxml2-devel readline-devel openssl-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel libuuid-devel"
+BUILDREQUIRES="libaio-devel libattr-devel libxml2-devel readline-devel openssl-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel libuuid-devel gperftools-devel gperftools-libs"
 
 if [ "${CENTOS_VERSION}" -eq 8 ]
 then
@@ -92,7 +92,7 @@ case "${CENTOS_VERSION}/${GIT_VERSION}" in
         ;;
     *)
         # gnfs is not enabled by default, but our regression tests depend on it
-        MOCK_RPM_OPTS='--with=gnfs'
+        MOCK_RPM_OPTS='--with=gnfs --with=tcmalloc'
         ;;
 esac
 
