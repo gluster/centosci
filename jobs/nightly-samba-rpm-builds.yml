@@ -7,8 +7,8 @@
       - 'fedora33'
     samba_branch:
       - 'master'
+      - 'v4-15-test'
       - 'v4-14-test'
-      - 'v4-13-test'
     jobs:
       - 'gluster_samba-build-rpms-{os_version}-{samba_branch}'
 
