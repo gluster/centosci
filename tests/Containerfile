@@ -11,7 +11,6 @@ COPY . /opt/build/
 # make jobs directory writable, otherwise deploy-centos-ci.sh fails
 RUN chmod ugo=rwx /opt/build/jobs
 
-ENV HOME=/opt/build
 WORKDIR /opt/build
 
 CMD ["sh", "-c", "tests/verify-yaml.sh"]
