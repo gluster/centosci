@@ -1,0 +1,17 @@
+FROM quay.io/centos/centos:latest
+
+RUN true \
+ && dnf -y install python3-pip \
+ && pip3 install jenkins-job-builder \
+ && dnf -y clean all \
+ && true
+
+COPY . /opt/build/
+
+# make jobs directory writable, otherwise deploy-centos-ci.sh fails
+RUN chmod ugo=rwx /opt/build/jobs
+
+ENV HOME=/opt/build
+WORKDIR /opt/build
+
+CMD ["sh", "-c", "tests/verify-yaml.sh"]
