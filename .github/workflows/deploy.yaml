@@ -1,0 +1,17 @@
+---
+name: Deploy Jenkins jobs
+on:
+  push:
+    branches:
+      - main
+jobs:
+  push:
+    name: Deploy Jenkins jobs
+    runs-on: ubuntu-latest
+    if: github.repository == 'gluster/centosci'
+    steps:
+      - uses: actions/checkout@v2
+      - name: build JJB container image
+        run: docker build -t gluster-centosci -f tests/Containerfile .
+      - name: update Jenkins Jobs
+        run: docker run --rm --env="JENKINS_API_KEY=${{ secrets.JENKINS_API_KEY }}" --entrypoint=tests/deploy-centos-ci.sh gluster-centosci:latest
