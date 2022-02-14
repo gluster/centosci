@@ -11,16 +11,17 @@ set -e
 
 BUILDREQUIRES="libaio-devel libattr-devel libxml2-devel readline-devel openssl-devel fuse-devel glib2-devel userspace-rcu-devel libacl-devel libuuid-devel gperftools-devel gperftools-libs"
 
-if [ "${CENTOS_VERSION}" -eq 8 ]
-then
-    ENABLE_REPOS="--enablerepo=powertools,devel"
-    BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel liburing-devel rsync "
-    yum -y update
-    yum -y install epel-release
-    cat /etc/os-release
-else
-    BUILDREQUIRES="${BUILDREQUIRES} python-devel"
-fi
+case "${CENTOS_VERSION}" in
+    7)
+        BUILDREQUIRES="${BUILDREQUIRES} python-devel"
+    ;;
+    *)
+        ENABLE_REPOS="--enablerepo=powertools"
+        BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel liburing-devel rsync "
+        yum -y update
+        yum -y install epel-release
+    ;;
+esac
 
 # install basic dependencies for building the tarball and srpm
 yum -y install git autoconf automake gcc libtool bison flex make rpm-build mock createrepo_c
@@ -66,12 +67,14 @@ fi
 
 # generate the tar.gz archive
 ./autogen.sh
-if [ "${CENTOS_VERSION}" -eq 7 ]
-then
-    ./configure --enable-fusermount --enable-gnfs --disable-linux-io_uring
-else
-    ./configure --enable-fusermount --enable-gnfs
-fi
+case "${CENTOS_VERSION}" in
+    7)
+        ./configure --enable-fusermount --enable-gnfs --disable-linux-io_uring
+    ;;
+    *)
+        ./configure --enable-fusermount --enable-gnfs
+    ;;
+esac
 
 rm -f *.tar.gz
 make dist
@@ -96,11 +99,21 @@ case "${CENTOS_VERSION}/${GIT_VERSION}" in
         ;;
 esac
 
+
+case "${CENTOS_VERSION}" in
+    8-stream)
+        MOCK_CHROOT=centos-stream+epel-next-8-x86_64
+    ;;
+    *)
+        MOCK_CHROOT=epel-${CENTOS_VERSION}-${CENTOS_ARCH}
+    ;;
+esac
+
 # do the actual RPM build in mock
 # TODO: use a CentOS Storage SIG buildroot
 RESULTDIR=/srv/gluster/nightly/${GITHUB_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
 /usr/bin/mock \
-    --root epel-${CENTOS_VERSION}-${CENTOS_ARCH} \
+    --root ${MOCK_CHROOT} \
     ${MOCK_RPM_OPTS} \
     --resultdir ${RESULTDIR} \
     --rebuild ${SRPM}

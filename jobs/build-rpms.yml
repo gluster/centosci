@@ -27,7 +27,7 @@
         name: GITHUB_BRANCH
     - choice:
         choices:
-        - '8'
+        - '8-stream'
         - '7'
         description: CentOS version to build the RPMs
         name: CENTOS_VERSION

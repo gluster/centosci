@@ -1,4 +1,4 @@
-FROM quay.io/centos/centos:latest
+FROM quay.io/centos/centos:stream
 
 RUN true \
  && dnf -y install python3-pip \
