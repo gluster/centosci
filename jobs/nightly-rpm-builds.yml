@@ -15,7 +15,7 @@
           predefined-parameters:
             GITHUB_BRANCH=devel
 
-            CENTOS_VERSION=8
+            CENTOS_VERSION=8-stream
 
             CENTOS_ARCH=x86_64
     - trigger-builds:
@@ -42,7 +42,7 @@
           predefined-parameters:
             GITHUB_BRANCH=release-9
 
-            CENTOS_VERSION=8
+            CENTOS_VERSION=8-stream
 
             CENTOS_ARCH=x86_64
     - trigger-builds:
@@ -60,6 +60,6 @@
           predefined-parameters:
             GITHUB_BRANCH=release-8
 
-            CENTOS_VERSION=8
+            CENTOS_VERSION=8-stream
 
             CENTOS_ARCH=x86_64
