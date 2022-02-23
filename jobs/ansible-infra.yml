@@ -1,7 +1,7 @@
 ---
 - job:
     name: gluster_ansible-infra
-    node: cico-workspace
+    node: gluster
     description: Run the test against a bare docker container and check if role
       firewall_config is working fine.
 

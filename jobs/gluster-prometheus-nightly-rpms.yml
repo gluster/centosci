@@ -1,6 +1,6 @@
 - job:
     name: gluster_prometheus-nightly-rpms
-    node: cico-workspace
+    node: gluster
     description: Build gluster-prometheus-exporter nightly RPMs.
     project-type: freestyle
     concurrent: true
