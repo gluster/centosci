@@ -1,6 +1,6 @@
 - job:
     name: gluster_heketi-functional
-    node: gluster
+    node: cico-workspace
     description: Run the functional test from upstream Heketi against the
       latest build of the glusterfs packages. A new run is executed
       automatically against the nightly builds of the master branch.
