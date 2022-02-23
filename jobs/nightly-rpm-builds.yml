@@ -1,6 +1,6 @@
 - job:
     name: gluster_nightly-rpm-builds
-    node: gluster
+    node: cico-workspace
     description: Build RPMs.
     project-type: freestyle
     concurrent: true
