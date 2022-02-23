@@ -14,4 +14,4 @@ jobs:
       - name: build JJB container image
         run: docker build -t gluster-centosci -f tests/Containerfile .
       - name: update Jenkins Jobs
-        run: docker run --rm --env="JENKINS_API_KEY=${{ secrets.JENKINS_API_KEY_NEW }}" --entrypoint=tests/deploy-centos-ci.sh gluster-centosci:latest
+        run: docker run --rm --env="JENKINS_API_KEY=${{ secrets.JENKINS_API_KEY }}" --entrypoint=tests/deploy-centos-ci.sh gluster-centosci:latest

@@ -1,6 +1,6 @@
 - job:
     name: gluster_glusto-weekly-run
-    node: cico-workspace
+    node: gluster
     description: Run all functional tests from glusto-tests
     project-type: freestyle
     concurrent: false

@@ -1,6 +1,6 @@
 - job:
     name: gluster_block_basic
-    node: cico-workspace
+    node: gluster
     description: Build gluster-block
     project-type: freestyle
     concurrent: true
