@@ -133,7 +133,7 @@ fi
 
 cat > /srv/gluster/nightly/${REPO_NAME}.repo <<< "[gluster-nightly-${REPO_VERSION}]
 name=Gluster Nightly builds (${GITHUB_BRANCH} branch)
-baseurl=http://artifacts.ci.centos.org/gluster/nightly/${GITHUB_BRANCH}/\$releasever/\$basearch
+baseurl=http://artifacts.ci.centos.org/gluster/nightly/${GITHUB_BRANCH}/\$stream/\$basearch
 enabled=1
 gpgcheck=0"
 
