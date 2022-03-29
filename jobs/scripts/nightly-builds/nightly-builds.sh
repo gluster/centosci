@@ -18,7 +18,7 @@ case "${CENTOS_VERSION}" in
     *)
         ENABLE_REPOS="--enablerepo=powertools"
         BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel liburing-devel rsync "
-        yum -y update
+        yum -y update --skip-broken --nobest 
         yum -y install epel-release
     ;;
 esac
