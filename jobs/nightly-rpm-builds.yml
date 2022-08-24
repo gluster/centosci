@@ -63,3 +63,12 @@
             CENTOS_VERSION=8-stream
 
             CENTOS_ARCH=x86_64
+    - trigger-builds:
+        - project: gluster_build-rpms
+          block: false
+          predefined-parameters:
+            GITHUB_BRANCH=devel
+
+            CENTOS_VERSION=9-stream
+
+            CENTOS_ARCH=x86_64

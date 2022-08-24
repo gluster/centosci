@@ -15,6 +15,12 @@ case "${CENTOS_VERSION}" in
     7)
         BUILDREQUIRES="${BUILDREQUIRES} python-devel"
     ;;
+    9-stream)
+        ENABLE_REPOS="--enablerepo=crb"
+        BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel liburing-devel rsync "
+        yum -y update --skip-broken --nobest 
+        yum -y install epel-release
+    ;;
     *)
         ENABLE_REPOS="--enablerepo=powertools"
         BUILDREQUIRES="${BUILDREQUIRES} python3-devel rpcgen libtirpc-devel liburing-devel rsync "
@@ -84,7 +90,7 @@ rm -f *.src.rpm
 SRPM=$(rpmbuild --define 'dist .autobuild' --define "_srcrpmdir ${PWD}" \
     --define '_source_payload w9.gzdio' \
     --define '_source_filedigest_algorithm 1' \
-    -ts glusterfs-${VERSION}.tar.gz | cut -d' ' -f 2)
+    -ts glusterfs-${VERSION}.tar.gz | tail -n 1 | cut -d' ' -f 2)
 
 MOCK_RPM_OPTS=''
 case "${CENTOS_VERSION}/${GIT_VERSION}" in
@@ -99,10 +105,10 @@ case "${CENTOS_VERSION}/${GIT_VERSION}" in
         ;;
 esac
 
-
-case "${CENTOS_VERSION}" in
-    8-stream)
-        MOCK_CHROOT=centos-stream+epel-next-8-x86_64
+#Setting the mock chroot for the Stream versions of Centos
+case "$(echo ${CENTOS_VERSION} | cut -d '-' -f2)" in
+    stream)
+        MOCK_CHROOT=centos-stream+epel-next-"$(echo ${CENTOS_VERSION} | cut -d '-' -f1)"-x86_64
     ;;
     *)
         MOCK_CHROOT=epel-${CENTOS_VERSION}-${CENTOS_ARCH}

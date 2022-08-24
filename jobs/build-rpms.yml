@@ -3,7 +3,7 @@
     node: cico-workspace
     description: Build RPMs.
     project-type: freestyle
-    concurrent: true
+    concurrent: false
 
     scm:
     - git:
@@ -27,6 +27,7 @@
         name: GITHUB_BRANCH
     - choice:
         choices:
+        - '9-stream'
         - '8-stream'
         - '7'
         description: CentOS version to build the RPMs
