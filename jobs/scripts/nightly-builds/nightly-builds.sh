@@ -2,8 +2,9 @@
 
 artifact()
 {
-    [ -e ~/rsync.passwd ] || return 0
-    rsync -av --password-file ~/rsync.passwd ${@} gluster@artifacts.ci.centos.org::gluster/nightly/
+    #Copy the RPMS using scp
+    [ -e ~/gluster-ssh-privatekey ] || return 0
+    scp -q -o StrictHostKeyChecking=no -i ~/gluster-ssh-privatekey -r "${@}" gluster@artifacts.ci.centos.org:/srv/artifacts/gluster/nightly/
 }
 
 # if anything fails, we'll abort

@@ -3,7 +3,7 @@
     node: cico-workspace
     description: Build RPMs.
     project-type: freestyle
-    concurrent: false
+    concurrent: true
 
     triggers:
     - timed: "H 0 * * *"
