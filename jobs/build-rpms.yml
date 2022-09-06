@@ -13,7 +13,7 @@
 
     builders:
     - shell: !include-raw: scripts/common/get-node.sh
-    - shell: !include-raw: scripts/common/rsync.sh
+    - shell: !include-raw: scripts/common/scp.sh
     - shell: jobs/scripts/common/bootstrap.sh $WORKSPACE/jobs/scripts/nightly-builds/nightly-builds.sh "GITHUB_BRANCH=$GITHUB_BRANCH CENTOS_VERSION=$CENTOS_VERSION CENTOS_ARCH=$CENTOS_ARCH"
 
     parameters:

@@ -1,5 +1,6 @@
 # cico-node-done-from-ansible.sh
 # A script that releases nodes from a SSID file written by
+set +x
 SSID_FILE=${SSID_FILE:-$WORKSPACE/cico-ssid}
 
 for ssid in $(cat ${SSID_FILE})
