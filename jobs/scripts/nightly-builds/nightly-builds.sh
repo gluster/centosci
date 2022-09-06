@@ -145,6 +145,7 @@ enabled=1
 gpgcheck=0"
 
 pushd /srv/gluster/nightly
+sleep 1800
 artifact ${REPO_NAME}.repo
 artifact ${GITHUB_BRANCH}
 popd
