@@ -1,42 +1,59 @@
-# Inspired by cico-node-get-to-ansible.sh
-# A script that provisions nodes and writes them to a file
+#!/bin/bash
+
 set +x
-NODE_COUNT=${NODE_COUNT:-1}
-ANSIBLE_HOSTS=${ANSIBLE_HOSTS:-$WORKSPACE/hosts}
-SSID_FILE=${SSID_FILE:-$WORKSPACE/cico-ssid}
 
-# Delete the host file if it exists
-rm -rf $ANSIBLE_HOSTS
+cat > ~/.config/duffy <<EOF
+client:
+  url: https://duffy.ci.centos.org/api/v1
+  auth:
+    name: gluster
+    key: ${CICO_API_KEY}
+EOF
 
-# Get nodes
-nodes=$(cico -q node get --count ${NODE_COUNT} --column hostname --release ${CENTOS_VERSION} --column ip_address --column comment -f value)
-cico_ret=$?
+case "${CENTOS_VERSION}" in
+    7)
+        VERSION_STRING="7"
+    ;;
+    8-stream)
+        VERSION_STRING="8s"
+    ;;
+    9-stream)
+        VERSION_STRING="9s"
+    ;;
+esac
 
-# Fail in case cico returned an error, or no nodes at all
-if [ ${cico_ret} -ne 0 ]
-then
-    echo "cico returned an error (${cico_ret})"
-    exit 2
-elif [ -z "${nodes}" ]
-then
-    echo "cico failed to return any systems"
-    exit 2
+POOL_MATCH="^(metal-ec2)(.*)(centos-${VERSION_STRING}-x86_64)$"
+
+readarray -t POOLS < <(duffy client list-pools | jq -r '.pools[].name')
+
+for i in "${POOLS[@]}"
+do
+	if [[ $i =~ ${POOL_MATCH} ]]; then
+		POOL_FOUND=$i
+		break
+	fi
+done
+
+if [ -z "${POOL_FOUND}" ]; then
+	echo "No matching pool found"
+	exit 1
 fi
 
-# Write nodes to inventory file and persist the SSID separately for simplicity
-touch ${SSID_FILE}
-IFS=$'\n'
-for node in ${nodes}
+for i in {1..30}
 do
-    host=$(echo "${node}" |cut -f1 -d " ")
-    address=$(echo "${node}" |cut -f2 -d " ")
-    ssid=$(echo "${node}" |cut -f3 -d " ")
+	NODES_READY=$(duffy client show-pool "${POOL_FOUND}" | jq -r '.pool.levels.ready')
+	if [ "${NODES_READY}" -ge 1 ]; then
+		SESSION=$(duffy client request-session pool="${POOL_FOUND}",quantity=1)
+		echo "${SESSION}" | jq -r '.session.nodes[].ipaddr' > "${WORKSPACE}"/hosts
+		echo "${SESSION}" | jq -r '.session.id' > "${WORKSPACE}"/session_id
+		break
+	fi
 
-    line="${address}"
-    echo "${line}" >> ${ANSIBLE_HOSTS}
-
-    # Write unique SSIDs to the SSID file
-    if ! grep -q ${ssid} ${SSID_FILE}; then
-        echo ${ssid} >> ${SSID_FILE}
-    fi
+	sleep 60
+	echo -n "."
 done
+
+if [ -z "${SESSION}" ]; then
+	echo "Failed to reserve node"
+	exit 1
+fi
