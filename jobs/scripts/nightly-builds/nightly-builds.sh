@@ -40,6 +40,7 @@ yum -y ${ENABLE_REPOS} install ${BUILDREQUIRES}
 #git clone https://review.gluster.org/glusterfs
 git clone --depth 1 --branch ${GITHUB_BRANCH} https://github.com/gluster/glusterfs
 cd glusterfs/
+git fetch origin pull/4004/head:TEST_BRANCH && git checkout TEST_BRANCH
 
 # generate a version based on branch.last-commit-date.last-commit-hash
 if [ ${GITHUB_BRANCH} = 'devel' ]; then
