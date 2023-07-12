@@ -3,6 +3,7 @@
 artifact()
 {
     #Copy the RPMS using scp
+    rm -rf ${RESULTDIR}/*.log
     [ -e ~/gluster-ssh-privatekey ] || return 0
     scp -q -o StrictHostKeyChecking=no -i ~/gluster-ssh-privatekey -r "${@}" gluster@artifacts.ci.centos.org:/srv/artifacts/gluster/nightly/
 }
@@ -118,7 +119,8 @@ esac
 
 # do the actual RPM build in mock
 # TODO: use a CentOS Storage SIG buildroot
-RESULTDIR=/srv/gluster/nightly/${GITHUB_BRANCH}/${CENTOS_VERSION}/${CENTOS_ARCH}
+VERSION_STRING=$(echo $CENTOS_VERSION | cut -d '-' -f1)
+RESULTDIR=/srv/gluster/nightly/${GITHUB_BRANCH}/${VERSION_STRING}/${CENTOS_ARCH}
 /usr/bin/mock \
     --root ${MOCK_CHROOT} \
     ${MOCK_RPM_OPTS} \
@@ -140,7 +142,7 @@ fi
 
 cat > /srv/gluster/nightly/${REPO_NAME}.repo <<< "[gluster-nightly-${REPO_VERSION}]
 name=Gluster Nightly builds (${GITHUB_BRANCH} branch)
-baseurl=http://artifacts.ci.centos.org/gluster/nightly/${GITHUB_BRANCH}/\$stream/\$basearch
+baseurl=http://artifacts.ci.centos.org/gluster/nightly/${GITHUB_BRANCH}/\$releasever/\$basearch
 enabled=1
 gpgcheck=0"
 
