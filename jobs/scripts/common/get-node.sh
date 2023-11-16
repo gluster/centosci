@@ -2,6 +2,8 @@
 
 set +x
 
+mkdir -p ~/.config/
+
 cat > ~/.config/duffy <<EOF
 client:
   url: https://duffy.ci.centos.org/api/v1

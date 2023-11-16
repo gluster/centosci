@@ -9,7 +9,7 @@ jobs:
     name: Verify Jenkins jobs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: build JJB container image
         run: docker build -t gluster-centosci -f tests/Containerfile .
       - name: update Jenkins Jobs
