@@ -1,0 +1,47 @@
+- job:
+    name: gluster_coreutils
+    node: gluster
+    description: Run the functional test from glusterfs-coreutils against the latest
+      build of the glusterfs packages. A new run is executed automatically against
+      the nightly builds of the master branch.
+    project-type: freestyle
+
+
+    scm:
+    - git:
+        url: https://github.com/gluster/centosci.git
+        branches:
+        - origin/master
+
+
+    builders:
+    - shell: !include-raw scripts/common/jenkins-job.py
+
+
+    properties:
+    - github:
+        url: https://github.com/gluster/glusterfs-coreutils/
+
+
+    parameters:
+    - string:
+        default: scripts/common/run-test.sh
+        description: Test script to execute on the reserved machine.
+        name: TEST_SCRIPT
+
+
+    triggers:
+    - pollurl:
+        cron: H */2 * * *
+        polling-node: gluster
+        urls:
+        - url: http://artifacts.ci.centos.org/gluster/nightly/master/7/x86_64/repodata/repomd.xml
+          check-date: true
+          timeout: 300
+          check-status: 200
+
+
+    wrappers:
+    - timestamps
+    - ansicolor:
+        colormap: xterm
